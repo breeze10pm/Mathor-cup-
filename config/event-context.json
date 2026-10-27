@@ -11,6 +11,13 @@
   "process_description_status": "user_reported_original_text_not_independently_verified",
   "source_coordinates": null,
   "full_runout_polygon": null,
+  "official_impact_core_point": {
+    "longitude": 85.3766,
+    "latitude": 28.2785,
+    "source": "TPDC吉隆跨境山洪—泥石流应急专题说明",
+    "source_status": "officially_reported_core_area_coordinate",
+    "interpretation_limit": "灾害核心区位置，不等同于冰崩源点、泥石流触发点、口岸断面或完整边界"
+  },
   "reported_source_elevation_m": 5200,
   "reported_transition_elevation_m": 4000,
   "reported_port_elevation_m": 1800,

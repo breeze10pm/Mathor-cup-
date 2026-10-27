@@ -26,6 +26,7 @@ import xarray as xr
 from project_runtime import PROJECT_ROOT as ROOT, sha256_file
 
 INPUTS = ROOT / "config/supplementary-inputs.json"
+EVENT_CONTEXT = ROOT / "config/event-context.json"
 GLACIER_NC = next((ROOT / "data/extracted/spatial/attachment_4").rglob("*.nc"))
 OUT = ROOT / "output/question2/initial_layers"
 NODATA = -9999.0
@@ -121,6 +122,7 @@ def _prepare_supplementary_vectors() -> dict:
 
 def main() -> None:
     manifest = json.loads(INPUTS.read_text(encoding="utf-8"))
+    event_context = json.loads(EVENT_CONTEXT.read_text(encoding="utf-8"))
     weather = next(row for row in manifest["inputs"] if row["topic_number"] == 3)
     archive = ROOT / weather["archive_path"]
     if archive.stat().st_size != weather["bytes"]:
@@ -130,6 +132,19 @@ def main() -> None:
         raise ValueError("Supplementary GFS archive hash differs from the recorded input")
     OUT.mkdir(parents=True, exist_ok=True)
     vector_metadata = _prepare_supplementary_vectors()
+    core_point = event_context["official_impact_core_point"]
+    impact_core = gpd.GeoDataFrame(
+        [{
+            "longitude": core_point["longitude"],
+            "latitude": core_point["latitude"],
+            "source": core_point["source"],
+            "status": core_point["source_status"],
+            "limit_note": core_point["interpretation_limit"],
+        }],
+        geometry=[Point(core_point["longitude"], core_point["latitude"])],
+        crs="EPSG:4326",
+    ).to_crs("EPSG:32645")
+    _write_gpkg(impact_core, "official_impact_core_point_32645.gpkg", "impact_core_point")
 
     with xr.open_dataset(GLACIER_NC, engine="h5netcdf") as ds:
         x = np.asarray(ds["x"].values, dtype=float)
@@ -217,6 +232,7 @@ def main() -> None:
         "supplementary_archive": weather["archive_path"],
         "supplementary_archive_sha256": input_hash,
         "supplementary_vectors": vector_metadata,
+        "official_impact_core_point_epsg4326": [core_point["longitude"], core_point["latitude"]],
         "glacier_source_center_candidate_wgs84": [source_centroid.x, source_centroid.y],
         "glacier_source_grid_crs": "EPSG:32645",
         "glacier_grid_cells": int(mask.sum()),
@@ -239,6 +255,7 @@ def main() -> None:
             "source_archive_hash_unchanged": True,
             "river_network_features": vector_metadata["river_rows"] == 11,
             "talus_inventory_features": vector_metadata["talus_rows"] == 261,
+            "official_core_point_feature": len(impact_core) == 1,
         },
         "layers": [
             "glacier_source_cells.gpkg (all glacier cells with exploratory elevation/aspect filters)",
@@ -250,6 +267,7 @@ def main() -> None:
             "glacier_velocity_climatology_30m.tif",
             "river_network_32645.gpkg",
             "talus_inventory_32645.gpkg",
+            "official_impact_core_point_32645.gpkg",
         ],
         "limitations": [
             "Glacier-grid centroid is only a reference for nearest GFS grid-cell distance, not the reported source coordinates.",
@@ -264,7 +282,7 @@ def main() -> None:
         json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     readme = """# 第二问首批 QGIS 图层\n\n这是数据准备层，不是已校准的触发概率/危险性模型。\n\n在 QGIS 中打开 `glacier_source_cells.gpkg` 和 `gfs_forecast_cells.gpkg`；另可加载同目录的 GeoTIFF。\n源区表保留全部 7,152 个冰川像元，`z5200_pm50`、`z5200_pm100` 和 `north_z5200_pm*` 是便于检查的探索过滤字段，并非确认边界。坡度、朝向按该 30m DEM 的网格导数计算。\n天气图层保留40个0.25°格点的13个预报时次；按 `forecast_hour` 与 `valid_time_utc` 过滤。GFS有效时刻使用UTC，同时保留原CSV中的北京时间列。\n\n`glacier_ice_thickness_30m.tif` 是静态冰厚，不是泥石流堆积厚度。未配准、未核实垂直基准的单张灾区DEM不能直接与它相减。\n版本与来源见 `config/supplementary-inputs.json`；全部层与限制见 `layer_manifest.json`。\n"""
-    readme += "\n\n`river_network_32645.gpkg` 和 `talus_inventory_32645.gpkg` 是收到的两项官方矢量数据的投影副本；岩屑坡原 Shapefile 缺少 SHX 索引，程序仅在临时副本中重建索引。`nearest_river_m` 是库存岩屑坡到所给河网的几何距离，不证明该岩屑坡参与了本次灾害。\n"
+    readme += "\n\n`river_network_32645.gpkg` 和 `talus_inventory_32645.gpkg` 是收到的两项官方矢量数据的投影副本；岩屑坡原 Shapefile 缺少 SHX 索引，程序仅在临时副本中重建索引。`nearest_river_m` 是库存岩屑坡到所给河网的几何距离，不证明该岩屑坡参与了本次灾害。\n\n`official_impact_core_point_32645.gpkg` 是TPDC公布的灾害核心区参考坐标。它不代表冰崩源点、泥石流触发点或精确口岸断面。\n"
     (OUT / "README.md").write_text(readme, encoding="utf-8")
 
 
