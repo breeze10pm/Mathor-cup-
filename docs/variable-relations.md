@@ -1,6 +1,6 @@
 # 第一问前置探索：变量物理分组与非降水关系
 
-生成：2026-10-27T07:54:32.636510+00:00。本报告是第一问的前置子步骤，尚未完成大气边界层结构、极端天气过程或泥石流关联分析，不给出最终“前5因素”。
+生成：2026-10-27T08:28:15.148432+00:00。本报告是第一问的前置子步骤，尚未完成大气边界层结构、极端天气过程或泥石流关联分析，不给出最终“前5因素”。
 F=本地原记录/表头或已保存官方定义可核验；I=按字段名作的物理解释或样本内解释；U=尚无足够证据。
 
 ## 1. 变量与证据地图
@@ -80,7 +80,7 @@ QC0+4敏感性视图中，总体原日值66对的最大|Δρ|为0.009276；相�
 
 ## 5. 复现与核验
 
-运行：`D:/miniforge3/Scripts/conda.exe run -n mc-base --no-capture-output python scripts/analyze_variable_relations.py`。
+运行：`conda run -n mc-base --no-capture-output python scripts/analyze_variable_relations.py`。
 合成边界测试：同环境运行`python -m unittest discover -s tests -p test_variable_relations.py -v`。
 产物仅写`output/variable_relations/`与本报告；CSV使用UTF-8 BOM。
 

@@ -1,14 +1,14 @@
 # 建模环境使用说明
 
 本项目使用独立的 `mc-base` 环境。Python、建模、气象与 GIS 依赖统一由 conda-forge 安装。
+跨机器复现的完整步骤见[项目README](../README.md)，所有命令均在自己的项目根目录执行，不绑定安装盘符或用户名。
 
 ## 日常使用
 
-在开始菜单打开 **Miniforge Prompt**，运行：
+在项目根目录打开 **Miniforge Prompt** 或已初始化conda的终端，运行：
 
 ```bat
 conda activate mc-base
-cd /d "D:\HCX\Mathor cup"
 python scripts\check_environment.py
 ```
 
@@ -27,13 +27,12 @@ Windows 下应先激活环境再运行脚本，以加载数值计算 DLL 及 GDA
 数据路径。不要用系统 Python 运行项目。也可不激活，改用以下显式命令：
 
 ```bat
-"D:\miniforge3\Scripts\conda.exe" run -n mc-base --no-capture-output python scripts\check_environment.py
+conda run -n mc-base --no-capture-output python scripts/check_environment.py
 ```
 
-VS Code 应打开整个项目文件夹。解释器使用
-`D:\miniforge3\envs\mc-base\python.exe`；Notebook 内核选择
-**Python (MathorCup mc-base)**。如果此前手工选过其他解释器，需要在
-“Python: Select Interpreter”中切换一次。
+VS Code 应打开整个项目文件夹，在“Python: Select Interpreter”中选择自己创建的`mc-base`环境。
+如需注册Notebook内核，在激活后运行`python -m ipykernel install --user --name mc-base --display-name "Python (MathorCup mc-base)"`，
+再选择该内核。工作区不固定Python或conda的安装目录。
 
 ## 已选能力
 
@@ -75,8 +74,9 @@ conda create -n mc-base-reproduced --file environment.win-64.lock.txt
 
 ## 论文编译
 
-TeX Live 安装在 `D:\texlive\2026`。VS Code 项目设置提供
+VS Code 项目设置提供
 **XeLaTeX + bibliography (latexmk)** 编译方案，支持中文与 Biber 参考文献。
+TeX发行版自行安装，`latexmk`从PATH发现，不要求固定版本目录或盘符。
 编译生成文件保存在 `.tex` 所在文件夹的 `build/` 下。
 
 ## 后续约定
@@ -87,6 +87,8 @@ Git 默认忽略原始数据与生成文件，应另外备份这些文件。
 PyTorch、YOLO 和 Origin 当前暂缓配置，后续根据具体任务决定是否补充。
 
 ## 本次安装修复记录
+
+以下是早期环境准备的历史记录，不是其他电脑复现必须执行的步骤。
 
 本机 Miniforge 26.9.4 安装的 `conda-launchers` 文件存在，但安装记录的
 `paths_data` 为空，导致创建含 Windows 命令入口的环境失败。

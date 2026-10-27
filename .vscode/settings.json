@@ -1,13 +1,10 @@
 {
-  "git.path": "C:\\Users\\h1883\\AppData\\Local\\Programs\\Git\\cmd\\git.exe",
-  "python.defaultInterpreterPath": "D:\\miniforge3\\envs\\mc-base\\python.exe",
-  "python.condaPath": "D:\\miniforge3\\Scripts\\conda.exe",
   "python.terminal.activateEnvironment": true,
   "files.encoding": "utf8",
   "latex-workshop.latex.tools": [
     {
       "name": "latexmk-xelatex",
-      "command": "D:\\texlive\\2026\\bin\\windows\\latexmk.exe",
+      "command": "latexmk",
       "args": [
         "-xelatex",
         "-synctex=1",

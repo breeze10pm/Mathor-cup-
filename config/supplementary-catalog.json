@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "purpose": "Public catalog facts and selected official statements; not a replacement for file-level verification or proof of forecast availability.",
+  "retrieved_at_utc": "2026-10-27T12:16:18.789875+00:00",
+  "topic_page": "https://data.tpdc.ac.cn/projectList?listId=647de7b8-efef-4502-88a8-c4cf14204b9b&nodeKey=f405655e-9a60-4851-820e-207d5f9c8732",
+  "catalog_request": {
+    "method": "POST",
+    "endpoint": "https://data.tpdc.ac.cn/view/metadataView/pageBySpecial",
+    "json": {
+      "title": "",
+      "pageSize": 100,
+      "pageNum": 1,
+      "specialId": "f405655e-9a60-4851-820e-207d5f9c8732",
+      "isEnglish": false
+    }
+  },
+  "topic_snapshot_sha256": "aae84a72a064f4845e664947918dea25e96900ca58ec78febedca7a7f2a202a4",
+  "official_total": 26,
+  "datasets": [
+    {
+      "topic_number": 1,
+      "dataset_id": "08ee2ae2-33c0-4070-94cf-22705761eb20",
+      "title": "西藏日喀则市吉隆县泥石流灾害区岩屑坡数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/08ee2ae2-33c0-4070-94cf-22705761eb20",
+      "local_original_attachment": null,
+      "raw_data_received": false,
+      "official_description_excerpt": "据央视新闻报道，8月26日10时30分许，因尼泊尔一侧发生泥石流灾害，造成西藏日喀则市吉隆县吉隆口岸重大人员伤亡、失联。为应对此次泥石流灾害，方便科研工作者分析灾害机理、评估灾损及提出防治措施，特共享灾害区岩屑坡数据。该数据集基于注意力机制的DeepLab V3+深度学习模型和以2020年7月至9月为主的2 m分辨率的“高分（Gaofen）”系列和ZY-3卫星影像构建。岩屑坡对于揭示地貌演化规律、理解土壤水热过程以及管理与自然灾害和多年冻土动态相关的风险具有重要科学意义",
+      "official_instructions": "该数据以shp格式保存，可以使用QGIS软件或ArcGIS软件打开和使用。",
+      "detail_snapshot_sha256": "4d6dc025f8f1a599459911a1f0993c1ff2a10b09e57d319b8540ecd846651845"
+    },
+    {
+      "topic_number": 2,
+      "dataset_id": "0928ed39-5ca4-4be6-856f-1e7fa87b9304",
+      "title": "西藏日喀则市吉隆县泥石流灾害区交通路网数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/0928ed39-5ca4-4be6-856f-1e7fa87b9304",
+      "local_original_attachment": null,
+      "raw_data_received": false
+    },
+    {
+      "topic_number": 3,
+      "dataset_id": "147456c9-f740-4259-a2ea-fd7423613510",
+      "title": "2026年8月26日日喀则市吉隆县泥石流灾害区降水和云与水成物数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/147456c9-f740-4259-a2ea-fd7423613510",
+      "local_original_attachment": null,
+      "raw_data_received": false,
+      "official_description_excerpt": "2026年8月26日10时30分，尼泊尔一侧发生泥石流灾害，造成西藏日喀则市吉隆县吉隆口岸重大人员伤亡、失联。为支撑2026年8月26日吉隆县泥石流灾害专题分析，整理形成吉隆县GFS降水、云与水成物预报数据集。数据源为美国国家环境预报中心全球预报系统（GFS）0.25°产品，起报时间为2026年8月25日00时（UTC），包含f000—f072共13个6小时间隔预报时次。数据内容包括降水率、对流降水率、6小时及起报以来累计降水，雨、雪、冻雨和冰粒类别，可降水量、整层云水路径、低中高云量及总云量，以及22个等压面上的云水、云冰、雨水、雪和霰混合比。",
+      "official_instructions": "文件采用“吉隆县GFS_降水云与水成物_YYYYMMDDTHHZ_f000-f072”命名，其中YYYYMMDDTHHZ表示UTC起报时间，f000-f072表示从分析场至72小时预报",
+      "detail_snapshot_sha256": "47f7f48a0b966c3866aaf77c92d9179ac6d77323a198e51fd252a88d89456b33"
+    },
+    {
+      "topic_number": 4,
+      "dataset_id": "1683f1e9-ae7c-4fd7-9709-b820243544c8",
+      "title": "西藏日喀则市吉隆县吉隆口岸3km分辨率WRF模式的近地表气象动力降尺度数据（2026年8月25日至27日）",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/1683f1e9-ae7c-4fd7-9709-b820243544c8",
+      "local_original_attachment": null,
+      "raw_data_received": false,
+      "official_description_excerpt": "2026年8月26日10时30分，因尼泊尔一侧发生泥石流灾害，造成西藏日喀则市吉隆县吉隆口岸重大人员伤亡、失联。为深入分析此次灾害发生前后的大气环流背景、降水演变及局地气象条件，本数据集基于中尺度数值天气预报模式WRF开展了针对灾害核心受灾区域的高分辨率降尺度模拟。模拟采用双层嵌套网格配置，外层域(d01)水平分辨率9 km、内层域(d02)水平分辨率3 km，垂直方向44层，网格中心与灾害核心受灾区域中心点坐标一致，即北纬28.2785°，东经85.3766°。初始场及边界条件驱动数据源自GFS预报场数据产品，模拟时段覆盖灾害发生前后（2026年8月25日至27日），逐时输出降水、风场、气温、湿度、边界层高度等三维及地表气象要素。该数据旨在提供灾害发生期间高时空分辨率的气象场结果，以便结合基础地理、地形、卫星遥感解译的灾害位置数据（受灾区域中心点：北纬28.2785°，东经85.3766°）及历史灾害资料，开展泥石流的气象成因机制分析、致灾天气系统追溯、灾情空间展布规律研究以及灾后恢复重建气候风险评估等工作。",
+      "official_instructions": "该文件包含wrfout_d01_2026-08-25_00_00_00和wrfout_d02_2026-08-25_00_00_00两个文件，可通过NCL、Python、GrADS等工具读取。",
+      "detail_snapshot_sha256": "0d1b2b2af4081f6d3edfc116be8147fd290740956c0ca41e42b71c6d3baa9436"
+    },
+    {
+      "topic_number": 5,
+      "dataset_id": "1f6fe3e7-82b3-4086-9586-9272f533450e",
+      "title": "西藏日喀则市吉隆县泥石流灾害区冰湖数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/1f6fe3e7-82b3-4086-9586-9272f533450e",
+      "local_original_attachment": null,
+      "raw_data_received": false
+    },
+    {
+      "topic_number": 6,
+      "dataset_id": "28419b4f-25ec-4fe2-af1a-e247ffda097a",
+      "title": "2026年8月26日日喀则市吉隆县泥石流灾害区辐射与能量通量数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/28419b4f-25ec-4fe2-af1a-e247ffda097a",
+      "local_original_attachment": null,
+      "raw_data_received": false
+    },
+    {
+      "topic_number": 7,
+      "dataset_id": "2f59e253-3b9f-45ed-ab5d-a495473467c3",
+      "title": "西藏日喀则市吉隆县泥石流灾害区冻土数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/2f59e253-3b9f-45ed-ab5d-a495473467c3",
+      "local_original_attachment": null,
+      "raw_data_received": false
+    },
+    {
+      "topic_number": 8,
+      "dataset_id": "3c089767-86d8-4918-8006-d83154f841e5",
+      "title": "2026年8月26日日喀则市吉隆县泥石流灾害区气压高度与风场数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/3c089767-86d8-4918-8006-d83154f841e5",
+      "local_original_attachment": null,
+      "raw_data_received": false,
+      "official_description_excerpt": "本数据集包含 2026 年 8 月 25‑28 日日喀则市吉隆县泥石流灾害区地面气压、位势高度、近地面风场等气象要素。数据主要用于还原灾害发生时段区域大气背景场，分析局地气压扰动与风场演变特征，为厘清泥石流灾害的气象驱动条件提供基础依据。原始数据来源于 GFS 全球气象产品，通过 GRIB2 格式要素提取、要素筛选、单位换算、时序整理等步骤加工处理而成。经过值域检查与逻辑判别，时序完整，无明显缺测与异常值，整体质量稳定可靠。数据集可支撑高原山地环流分析、地质灾害气象诱因研判，也可为区域冰川‑气候相互作用、山地灾害风险评估等相关研究提供数据支撑。",
+      "official_instructions": "2026年8月26日日喀则市吉隆县泥石流灾害区气压高度与风场数据，该数据以grib格式给出。",
+      "detail_snapshot_sha256": "10b567ea8f07c27778ff07f7e1a56a9761b28bd04180e200bdc074eab38cefa2"
+    },
+    {
+      "topic_number": 9,
+      "dataset_id": "4b1dc4d3-c498-48d3-8ea3-8bb7688c74c2",
+      "title": "2026年日喀则市吉隆县泥石流灾害区灾前尼泊尔国家地震台网KKN台站（NK.KKN..BHZ）地震波数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/4b1dc4d3-c498-48d3-8ea3-8bb7688c74c2",
+      "local_original_attachment": null,
+      "raw_data_received": false
+    },
+    {
+      "topic_number": 10,
+      "dataset_id": "4e1e74fb-dcee-4ce4-8b07-ec3f3109eabe",
+      "title": "西藏日喀则市吉隆县泥石流灾害区土地覆盖数据（2020-2023）",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/4e1e74fb-dcee-4ce4-8b07-ec3f3109eabe",
+      "local_original_attachment": 5,
+      "raw_data_received": true
+    },
+    {
+      "topic_number": 11,
+      "dataset_id": "5b09afd1-d11b-4150-a291-50f0484dddf1",
+      "title": "西藏吉隆高寒山区地气相互作用逐小时综合观测数据集（2021–2026）",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/5b09afd1-d11b-4150-a291-50f0484dddf1",
+      "local_original_attachment": 1,
+      "raw_data_received": true
+    },
+    {
+      "topic_number": 12,
+      "dataset_id": "65a266d2-c9c8-4f49-803b-cbeff12ff450",
+      "title": "西藏日喀则市吉隆县泥石流灾害历史借鉴数据——2021年3月22日在雅鲁藏布江下游色东谱沟冰崩波形数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/65a266d2-c9c8-4f49-803b-cbeff12ff450",
+      "local_original_attachment": null,
+      "raw_data_received": false
+    },
+    {
+      "topic_number": 13,
+      "dataset_id": "8662c472-43d6-4e92-bff8-e26923970642",
+      "title": "西藏日喀则市吉隆县泥石流灾害区吉隆县第七次人口普查数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/8662c472-43d6-4e92-bff8-e26923970642",
+      "local_original_attachment": 8,
+      "raw_data_received": true
+    },
+    {
+      "topic_number": 14,
+      "dataset_id": "88b5ab22-19a1-480f-bcdc-cec41776ab46",
+      "title": "2026年8月26日日喀则市吉隆县泥石流灾害区DEM数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/88b5ab22-19a1-480f-bcdc-cec41776ab46",
+      "local_original_attachment": 7,
+      "raw_data_received": true
+    },
+    {
+      "topic_number": 15,
+      "dataset_id": "8eae7041-334c-4e9f-833e-5fc13f53b851",
+      "title": "2026年8月26日日喀则市吉隆县泥石流灾害区泥石流灾害区强对流与雷达数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/8eae7041-334c-4e9f-833e-5fc13f53b851",
+      "local_original_attachment": null,
+      "raw_data_received": false,
+      "official_description_excerpt": "2026年8月26日10时30分，因尼泊尔一侧发生泥石流灾害，造成西藏日喀则市吉隆县吉隆口岸重大人员伤亡、失联。为支撑2026年8月26日吉隆县泥石流灾害专题分析，整理形成吉隆县泥石流灾害区强对流与雷达数据。数据源为美国国家环境预报中心全球预报系统（GFS）0.25°产品，起报时间为2026年8月25日00UTC，预报时效0-72小时。主要变量包括CAPE、CIN、抬升指数、0-3 km风暴相对螺旋度、阵风及多层模式推导雷达反射率，可用于强对流潜势和泥石流气象风险分析。",
+      "official_instructions": "吉隆县GFS_强对流与模式雷达反射率_YYYYMMDDTHHZ_fXXX-fXXX.nc，YYYYMMDDTHHZ表示UTC起报时间；fXXX表示预报时效（小时）。",
+      "detail_snapshot_sha256": "a1e319185e75e2e6e154c1dbca72a5e4d3ccb83dc1a9e23ddc8be0da31c0314e"
+    },
+    {
+      "topic_number": 16,
+      "dataset_id": "94d1bc8e-b912-413e-bd2b-851f2ff8f8f7",
+      "title": "2005-2025年吉隆县及周边县市逐日平均气温数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/94d1bc8e-b912-413e-bd2b-851f2ff8f8f7",
+      "local_original_attachment": 2,
+      "raw_data_received": true
+    },
+    {
+      "topic_number": 17,
+      "dataset_id": "9a806070-5ad1-45e3-99a7-77d83e14778a",
+      "title": "西藏日喀则市吉隆县泥石流灾害区危险性冰湖数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/9a806070-5ad1-45e3-99a7-77d83e14778a",
+      "local_original_attachment": null,
+      "raw_data_received": false
+    },
+    {
+      "topic_number": 18,
+      "dataset_id": "a65fc18a-f964-40a3-b7e1-e90460c29f6a",
+      "title": "西藏日喀则市吉隆县泥石流灾害区冰川数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/a65fc18a-f964-40a3-b7e1-e90460c29f6a",
+      "local_original_attachment": null,
+      "raw_data_received": false
+    },
+    {
+      "topic_number": 19,
+      "dataset_id": "bbbbb256-84b4-4de0-8dcc-4d8822e1e155",
+      "title": "西藏日喀则市吉隆县泥石流灾害区石冰川数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/bbbbb256-84b4-4de0-8dcc-4d8822e1e155",
+      "local_original_attachment": null,
+      "raw_data_received": false
+    },
+    {
+      "topic_number": 20,
+      "dataset_id": "bcb3ae3c-5d95-46f6-b710-7d987559b426",
+      "title": "西藏日喀则市吉隆县泥石流灾害区气温数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/bcb3ae3c-5d95-46f6-b710-7d987559b426",
+      "local_original_attachment": null,
+      "raw_data_received": false,
+      "official_description_excerpt": "据央视新闻报道，8月26日10时30分许，因尼泊尔一侧发生泥石流灾害，造成西藏日喀则市吉隆县吉隆口岸重大人员伤亡、失联。为应对此次泥石流灾害，方便科研工作者分析灾害机理、评估灾损及提出防治措施，特共享灾害区气温数据。该数据集是根据CRU发布的全球0.5°气候数据集以及WorldClim发布的全球高分辨率气候数据集，通过Delta空间降尺度方案生成的。该数据对于评估灾区救援环境条件、制定救援保障措施具有重要参考价值。",
+      "official_instructions": "该数据为2025年逐月气温数据，空间分辨率为0.0083333°（约1km），气温单位为0.1℃，格式为tif。",
+      "detail_snapshot_sha256": "cc6461e00cb95db260bfe5cd5457b9329efad6d40b6c006b0524849fee9e682d"
+    },
+    {
+      "topic_number": 21,
+      "dataset_id": "be1c4b80-f26e-4f43-a54a-cedbfe06203b",
+      "title": "日喀则市吉隆县泥石流灾害区TPCSM 5km分辨率模拟数据（2026年8月22日00时至9月1日18））",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/be1c4b80-f26e-4f43-a54a-cedbfe06203b",
+      "local_original_attachment": null,
+      "raw_data_received": false,
+      "official_description_excerpt": "2026年8月26日10时30分，因尼泊尔一侧发生泥石流灾害，造成西藏日喀则市吉隆县吉隆口岸重大人员伤亡、失联。为支撑2026年8月吉隆县泥石流灾害区地表形态、沟谷结构、河道及堆积体等信息判读，整理形成吉隆县泥石流灾害区TPCSM 5km分辨率模拟数据。该数据集为TPCSM 10天数值模拟结果，模型输出标识为 WRF V4.0。数据覆盖2026年8月22日00时至9月1日18时，提供逐小时格点降水和2米气温模拟结果。降水产品变量为 RAINNC，单位为毫米，表示累计格点尺度降水；2米气温产品变量为 T2，单位为开尔文。主数据采用 NetCDF 格式，模拟网格为210×180，实际网格间距为5558.875 m，约5.56 km。数据覆盖吉隆县及西藏南部、尼泊尔北部周边地区，可用于降水过程分析、气温变化监测、泥石流灾害气象背景研判、逐时过程制图及多源遥感数据对比分析。",
+      "official_instructions": "文件以压缩包形式存储，使用方式详见数据说明。",
+      "detail_snapshot_sha256": "c9ce5287cf89db086d521718df423371d7b6e31e08cf796a727cd7245d8fbfcf"
+    },
+    {
+      "topic_number": 22,
+      "dataset_id": "c2875b3e-7fd4-4b38-9814-fef64193d1a4",
+      "title": "吉隆口岸山洪灾害-蓝塘里壤峰冰崩前冰川地形、冰厚及表面速度数据集",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/c2875b3e-7fd4-4b38-9814-fef64193d1a4",
+      "local_original_attachment": 4,
+      "raw_data_received": true
+    },
+    {
+      "topic_number": 23,
+      "dataset_id": "db142594-2819-403b-8da0-5ebb2a0ca951",
+      "title": "西藏日喀则市吉隆县泥石流灾害区历史灾点数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/db142594-2819-403b-8da0-5ebb2a0ca951",
+      "local_original_attachment": 6,
+      "raw_data_received": true
+    },
+    {
+      "topic_number": 24,
+      "dataset_id": "e7f8d50b-f647-4efe-8d15-a87173c13ab8",
+      "title": "西藏日喀则市吉隆县泥石流灾害区河流水系数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/e7f8d50b-f647-4efe-8d15-a87173c13ab8",
+      "local_original_attachment": null,
+      "raw_data_received": false,
+      "official_description_excerpt": "2026年8月26日10时30分，因尼泊尔一侧发生泥石流灾害，造成西藏日喀则市吉隆县吉隆口岸重大人员伤亡、失联。为应对此次泥石流灾害，方便科研工作者分析、特共享受灾区域水系数据。吉隆口岸地处吉隆藏布河谷深切段，水系发育密集，沟谷纵坡陡峻，河流侧蚀与下切作用强烈，是泥石流物源形成与运动的主要通道，也是灾害链传导的关键载体。该数据全面反映了受灾区域河流水系的空间分布网络特征，可用于泥石流运动路径模拟与影响范围预测、泥石流灾害链传导机制研究。\n",
+      "official_instructions": "该数据集以shp格式给出。",
+      "detail_snapshot_sha256": "3261335f25ce35751955da111d5ad29956531a45caa26548ce47e7622a1d1ddd"
+    },
+    {
+      "topic_number": 25,
+      "dataset_id": "f65a02a0-278f-4f69-a21a-eb705b684995",
+      "title": "西藏日喀则市吉隆县泥石流灾害区降水数据",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/f65a02a0-278f-4f69-a21a-eb705b684995",
+      "local_original_attachment": null,
+      "raw_data_received": false,
+      "official_description_excerpt": "据央视新闻报道，8月26日10时30分许，因尼泊尔一侧发生泥石流灾害，造成西藏日喀则市吉隆县吉隆口岸重大人员伤亡、失联。为应对此次泥石流灾害，方便科研工作者分析灾害机理、评估灾损及提出防治措施，特共享灾害区降水数据。该数据该是根据CRU发布的全球0.5°气候数据集以及WorldClim发布的全球高分辨率气候数据集，通过Delta空间降尺度方案生成的，可反映灾区的降水量时空分布特征，为救援行动提供气象保障。",
+      "official_instructions": "该数据为2025年逐月降水量数据，空间分辨率为0.0083333°（约1km），降水单位为0.1mm，格式为tif。",
+      "detail_snapshot_sha256": "4bba4b63358c7f4c804fb8f36a75598e8a972c67921e2137a8f9905fc84869b7"
+    },
+    {
+      "topic_number": 26,
+      "dataset_id": "f94c33c4-f521-4247-80ec-55dfa2dd453a",
+      "title": "日喀则市吉隆县特大洪水——200km周围内的冰川及冰川表面高程变化数据集（2000—2020年）",
+      "official_url": "https://www.tpdc.ac.cn/zh-hans/data/f94c33c4-f521-4247-80ec-55dfa2dd453a",
+      "local_original_attachment": 3,
+      "raw_data_received": true
+    }
+  ]
+}

@@ -94,10 +94,12 @@ def check_modeling_and_tables() -> dict:
 
 
 def check_meteorological_data() -> dict:
-    """Round-trip NetCDF through two backends and compute a chunked aggregate."""
+    """Write HDF5 NetCDF and decode through two backends, including Unicode paths."""
     import numpy as np
     import pandas as pd
     import xarray as xr
+    from netCDF4 import Dataset
+    from xarray.backends import NetCDF4DataStore
 
     rng = np.random.default_rng(SEED)
     values = rng.normal(273.15, 2.0, size=(48, 3, 4))
@@ -112,8 +114,10 @@ def check_meteorological_data() -> dict:
     )
     dataset.air_temperature.attrs["units"] = "K"
     path = OUTPUT_DIR / "synthetic_meteorology.nc"
-    dataset.to_netcdf(path, engine="netcdf4")
-    with xr.open_dataset(path, engine="netcdf4", chunks={"time": 12}) as loaded:
+    dataset.to_netcdf(path, engine="h5netcdf")
+    # Reading native netCDF4 from bytes avoids its Windows narrow-path API.
+    memory_dataset = Dataset('in_memory_environment_check', memory=path.read_bytes())
+    with xr.open_dataset(NetCDF4DataStore(memory_dataset), chunks={"time": 12}) as loaded:
         assert loaded.air_temperature.chunks is not None
         daily = loaded.air_temperature.resample(time="1D").mean().compute()
         assert daily.shape == (2, 3, 4)

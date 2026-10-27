@@ -1,4 +1,4 @@
-"""用文档技能捆绑的pypdfium2栅格化原生Word导出的PDF，供逐页QA。"""
+"""用pypdfium2栅格化Word或LibreOffice导出的PDF，供逐页QA。"""
 from pathlib import Path
 import json
 

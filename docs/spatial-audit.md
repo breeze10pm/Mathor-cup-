@@ -5,7 +5,7 @@
 已按[内嵌元数据复核](spatial-metadata-evidence.md)收紧日期和人口口径用语；官网补充与未决问题见[待确认事项清单](pending-questions.md)。
 
 ```powershell
-& 'D:\miniforge3\Scripts\conda.exe' run -n mc-base --no-capture-output python scripts/audit_spatial.py
+conda run -n mc-base --no-capture-output python scripts/audit_spatial.py
 ```
 
 原始压缩包只读；解压副本位于 `data/extracted/spatial/attachment_3` 至 `attachment_8`。解压前验证路径，中文RAR列表依次严格尝试UTF-8和GB18030。全部168个冰川变化TIFF、4个土地覆盖TIFF及1个DEM均逐文件读取全部第一波段像元，NetCDF读取全部数组；本报告不存在把抽样估计当全量统计的情形。冰川瓦片可能重叠且UTM/GCS为同一产品不同表达，禁止将其像元数简单相加称为独立冰川面积。

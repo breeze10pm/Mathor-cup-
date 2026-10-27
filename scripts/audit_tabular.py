@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import yaml
+from project_runtime import verify_input_files
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -609,6 +610,7 @@ def make_figures(hourly: dict, daily: dict) -> None:
 
 
 def main() -> None:
+    verify_input_files()
     OUTPUT.mkdir(parents=True, exist_ok=True)
     archives, inventory = make_inventory()
     dump_json(OUTPUT / "archive_manifest.json", inventory)

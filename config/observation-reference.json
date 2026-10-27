@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-10-27",
+  "dataset_id": "5b09afd1-d11b-4150-a291-50f0484dddf1",
+  "page_url": "https://www.tpdc.ac.cn/zh-hans/data/5b09afd1-d11b-4150-a291-50f0484dddf1",
+  "timezone": "Asia/Shanghai",
+  "utc_offset": "+08:00",
+  "labels": {
+    "startTime": "2021-04-26 20:00:00",
+    "endTime": "2026-08-27 08:00:00"
+  },
+  "export_epoch_ms": {
+    "startTime": 1619438400000,
+    "endTime": 1787788800000
+  },
+  "official_snapshot_sha256": {
+    "metadata_export": "23e8b279bb8ba314550165e823ead5f7ec18da6c7cd6db7f42bd6ed2974a680a",
+    "standard_detail": "52ee1f5632d7e770f34a2d82cc3013760f16955a4aa372f3e7b3814035bb69c2"
+  },
+  "meaning": "Officially declared observation label window, not instrument uptime, hourly support interval or disaster-stage time. Numeric records outside this window are preserved separately."
+}

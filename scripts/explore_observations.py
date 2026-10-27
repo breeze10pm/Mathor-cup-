@@ -22,6 +22,7 @@ import pandas as pd
 import yaml
 
 from audit_tabular import range_flags
+from project_runtime import load_observation_window
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "output/observation_exploration"
@@ -641,11 +642,7 @@ def main():
     config_path = ROOT / "config/analysis-constraints.yml"
     config_hash = sha256(config_path)
     constraints = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    official = ROOT / "output/metadata_review/official_pages/attachment_1_metadata_export.json"
-    metadata = json.loads(official.read_text(encoding="utf-8-sig"))
-    detail_path = official.with_name("attachment_1_standard_detail.json")
-    detail = json.loads(detail_path.read_text(encoding="utf-8-sig"))["context"]["metadataVO"]
-    start, end = declared_window(detail, metadata)
+    start, end, window_evidence = load_observation_window()
     manifest = json.loads((TAB / "archive_manifest.json").read_text(encoding="utf-8"))
     hashes = {r["archive"]: sha256(ROOT / "data/附件" / r["archive"]) for r in manifest}
     assert all(hashes[r["archive"]] == r["sha256"] for r in manifest), (
@@ -718,8 +715,7 @@ def main():
         "checked_at_utc": datetime.now(timezone.utc).isoformat(),
         "checks": checks,
         "source_hashes": hashes,
-        "official_metadata_sha256": sha256(official),
-        "official_detail_sha256": sha256(detail_path),
+        "observation_window_reference": window_evidence,
         "constraints_sha256": config_hash,
         "declared_label_window": {"start": str(start), "end": str(end), "timezone": "UTC+8"},
         "policies": {

@@ -13,7 +13,7 @@ $pdfPath = Join-Path $OutputDirectory 'project-roadmap.pdf'
 $roadmapWord = $null
 $roadmapDocument = $null
 try {
-    # Native Word is the fallback when this Windows runtime has no LibreOffice.
+    # Native Microsoft Word export on Windows; installation is discovered by COM.
     # Open only the generated document read-only; leave existing WPS/user documents untouched.
     $roadmapWord = New-Object -ComObject Word.Application
     $roadmapWord.Visible = $false

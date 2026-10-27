@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 import xml.etree.ElementTree as ET
+from project_runtime import find_archive_tar, open_hdf5_netcdf
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "output/data_audit/spatial"
@@ -29,7 +30,18 @@ EXTRACT = ROOT / "data/extracted/spatial"
 OUT.mkdir(parents=True, exist_ok=True)
 EXTRACT.mkdir(parents=True, exist_ok=True)
 plt.rcParams.update(
-    {"font.family": "Microsoft YaHei", "axes.unicode_minus": False, "figure.dpi": 130}
+    {
+        "font.family": "sans-serif",
+        "font.sans-serif": [
+            "Microsoft YaHei",
+            "Noto Sans CJK SC",
+            "Source Han Sans SC",
+            "SimHei",
+            "DejaVu Sans",
+        ],
+        "axes.unicode_minus": False,
+        "figure.dpi": 130,
+    }
 )
 
 
@@ -70,8 +82,13 @@ def unpack(n):
                         shutil.copyfileobj(src, dst)
             listing = z.namelist()
     else:
-        tar = "C:/Windows/system32/tar.exe"
-        result = subprocess.run([tar, "-tf", str(arc)], capture_output=True, check=True)
+        tar = find_archive_tar()
+        result = subprocess.run([tar, "-tf", str(arc)], capture_output=True)
+        if result.returncode:
+            raise RuntimeError(
+                "The discovered tar cannot read this RAR. Put a RAR-capable bsdtar on PATH; see README.md. "
+                + result.stderr.decode("utf-8", errors="replace")
+            )
         listing = [x.strip() for x in decode_tar(result.stdout).splitlines() if x.strip()]
         for member in listing:
             safe_member(member, dest)
@@ -259,7 +276,7 @@ def main():
     pop.drop(columns="geometry").to_csv(
         OUT / "population_attributes.csv", index=False, encoding="utf-8-sig"
     )
-    ds = xr.open_dataset(next(extracted[4].glob("*.nc")))
+    ds = open_hdf5_netcdf(next(extracted[4].glob("*.nc")))
     ncvars = []
     for k in ds.variables:
         a = ds[k].values
@@ -893,7 +910,7 @@ def report(path, s, hist, pop, lcdf, vectors, periods):
 已按[内嵌元数据复核](spatial-metadata-evidence.md)收紧日期和人口口径用语；官网补充与未决问题见[待确认事项清单](pending-questions.md)。
 
 ```powershell
-& 'D:\\miniforge3\\Scripts\\conda.exe' run -n mc-base --no-capture-output python scripts/audit_spatial.py
+conda run -n mc-base --no-capture-output python scripts/audit_spatial.py
 ```
 
 原始压缩包只读；解压副本位于 `data/extracted/spatial/attachment_3` 至 `attachment_8`。解压前验证路径，中文RAR列表依次严格尝试UTF-8和GB18030。全部168个冰川变化TIFF、4个土地覆盖TIFF及1个DEM均逐文件读取全部第一波段像元，NetCDF读取全部数组；本报告不存在把抽样估计当全量统计的情形。冰川瓦片可能重叠且UTM/GCS为同一产品不同表达，禁止将其像元数简单相加称为独立冰川面积。

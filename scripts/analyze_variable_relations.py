@@ -17,7 +17,8 @@ import numpy as np
 import pandas as pd
 import yaml
 
-from explore_observations import declared_window, record_states, sha256
+from explore_observations import record_states, sha256
+from project_runtime import load_observation_window
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "output/variable_relations"
@@ -31,14 +32,38 @@ SELECTED = [
     ("MET", "WS_2m(m/s)", "WS2", "近地风速", "区域近地动力背景；需全高度同步剖面后才能讨论风切变"),
     ("MET", "WS_20m(m/s)", "WS20", "近地风速", "与2m风速作同类观测关系示例，不单凭相关判稳定度"),
     ("MET", "Ta_2m(degree C)", "Ta2", "空气热力", "区域近地气温；不能替代灾区冰体温度或融化量"),
-    ("MET", "Ta_20m(degree C)", "Ta20", "空气热力", "与2m气温作同类观测关系示例；日中位数之差不作瞬时梯度"),
+    (
+        "MET",
+        "Ta_20m(degree C)",
+        "Ta20",
+        "空气热力",
+        "与2m气温作同类观测关系示例；日中位数之差不作瞬时梯度",
+    ),
     ("MET", "RH_2m(%)", "RH2", "空气水汽", "近地相对湿度背景；不直接代表局地凝结或降水"),
     ("MET", "Pressure(hPa)", "P", "空气热力", "站点气压背景；不能独立判定天气系统"),
     ("RADM", "Rsd(W/m2)", "Rsd", "辐射输入", "向下短波辐射背景；日中位数不等于日辐射能量"),
     ("RADM", "Rld(W/m2)", "Rld", "辐射输入", "向下长波辐射背景；不单凭相关归因云、水汽或温度"),
-    ("SOIL", "soilT_0.1m(degree C)", "Ts0.1", "土壤热状态", "站点浅层土温；不替代灾区冻土/冰体温度"),
-    ("SOIL", "soilT_0.8m(degree C)", "Ts0.8", "土壤热状态", "站点较深层土温背景；不由此推算融深或热传导系数"),
-    ("SOIL", "VWC_0.1m(m3/m3)", "VWC0.1", "土壤水分", "站点浅层体积含水率；不替代灾区孔隙水压或含水率"),
+    (
+        "SOIL",
+        "soilT_0.1m(degree C)",
+        "Ts0.1",
+        "土壤热状态",
+        "站点浅层土温；不替代灾区冻土/冰体温度",
+    ),
+    (
+        "SOIL",
+        "soilT_0.8m(degree C)",
+        "Ts0.8",
+        "土壤热状态",
+        "站点较深层土温背景；不由此推算融深或热传导系数",
+    ),
+    (
+        "SOIL",
+        "VWC_0.1m(m3/m3)",
+        "VWC0.1",
+        "土壤水分",
+        "站点浅层体积含水率；不替代灾区孔隙水压或含水率",
+    ),
     ("SOIL", "G_0.1m(W/m2)", "G0.1", "土壤热交换", "土壤热通量字段；正方向、标定与热储项尚需说明"),
 ]
 EXAMPLE_PAIRS = [
@@ -58,7 +83,9 @@ def daily_medians(values: pd.DataFrame, quality: pd.DataFrame, allowed_qc: set[i
     if not values.index.equals(quality.index) or not values.columns.equals(quality.columns):
         raise ValueError("Value and QC axes must match exactly")
     if values.index.tz is not None:
-        raise ValueError("Expected source Beijing wall-clock labels without silent timezone conversion")
+        raise ValueError(
+            "Expected source Beijing wall-clock labels without silent timezone conversion"
+        )
     numeric = values.apply(pd.to_numeric, errors="coerce")
     numeric = numeric.where(np.isfinite(numeric) & numeric.ne(9999.9))
     qc = quality.apply(pd.to_numeric, errors="coerce")
@@ -77,7 +104,9 @@ def within_year_month_center(daily: pd.DataFrame) -> pd.DataFrame:
 def pairwise_spearman(daily: pd.DataFrame, view: str, transform: str) -> pd.DataFrame:
     """完整参考年内逐对完整日，秩相关平均处理并列秩，不做显著性检验。"""
     reference = daily.loc[daily.index.year.isin(YEARS)]
-    scopes = [("2022-2025", reference)] + [(str(year), reference.loc[reference.index.year == year]) for year in YEARS]
+    scopes = [("2022-2025", reference)] + [
+        (str(year), reference.loc[reference.index.year == year]) for year in YEARS
+    ]
     rows = []
     for period, subset in scopes:
         for a, b in combinations(daily.columns, 2):
@@ -92,8 +121,18 @@ def pairwise_spearman(daily: pd.DataFrame, view: str, transform: str) -> pd.Data
             else:
                 # Spearman = Pearson correlation of average ranks; no p-value emitted.
                 rho = paired.rank(method="average").corr(method="pearson").iloc[0, 1]
-            rows.append(dict(view=view, transform=transform, period=period, field_a=a, field_b=b,
-                             n_matched_days=count, spearman_rho=rho, status=status))
+            rows.append(
+                dict(
+                    view=view,
+                    transform=transform,
+                    period=period,
+                    field_a=a,
+                    field_b=b,
+                    n_matched_days=count,
+                    spearman_rho=rho,
+                    status=status,
+                )
+            )
     return pd.DataFrame(rows)
 
 
@@ -126,19 +165,42 @@ def load_selected(archive: Path, dictionary: pd.DataFrame, start, end):
                 quality = pd.to_numeric(frame[field.qc_field], errors="coerce")
                 numeric_frame[field.field] = values.where(finite).to_numpy()
                 quality_frame[field.field] = quality.to_numpy()
-                coverage.append(dict(group=group, field=field.field, year=int(index[0].year), file=member,
-                    source_labels=len(index), source_numeric=int(finite.sum()),
-                    declared_labels=int(declared.sum()), declared_numeric=int((finite & declared).sum()),
-                    outside_declared_numeric=int((finite & ~declared).sum()),
-                    declared_numeric_qc0=int((finite & declared & quality.eq(0)).sum()),
-                    declared_numeric_qc4=int((finite & declared & quality.eq(4)).sum()),
-                    declared_numeric_qc0_plus4=int((finite & declared & quality.isin({0, 4})).sum())))
+                coverage.append(
+                    dict(
+                        group=group,
+                        field=field.field,
+                        year=int(index[0].year),
+                        file=member,
+                        source_labels=len(index),
+                        source_numeric=int(finite.sum()),
+                        declared_labels=int(declared.sum()),
+                        declared_numeric=int((finite & declared).sum()),
+                        outside_declared_numeric=int((finite & ~declared).sum()),
+                        declared_numeric_qc0=int((finite & declared & quality.eq(0)).sum()),
+                        declared_numeric_qc4=int((finite & declared & quality.eq(4)).sum()),
+                        declared_numeric_qc0_plus4=int(
+                            (finite & declared & quality.isin({0, 4})).sum()
+                        ),
+                    )
+                )
                 states = record_states(frame[field.field], 9999.9)
-                qc_strings = quality.map(lambda value: "qc_missing" if pd.isna(value) else format(value, "g"))
-                cells = pd.DataFrame({"qc": qc_strings.to_numpy(), "record_state": states.to_numpy()})
+                qc_strings = quality.map(
+                    lambda value: "qc_missing" if pd.isna(value) else format(value, "g")
+                )
+                cells = pd.DataFrame(
+                    {"qc": qc_strings.to_numpy(), "record_state": states.to_numpy()}
+                )
                 for (qc_label, state), count in cells.loc[declared].value_counts().items():
-                    cross.append(dict(group=group, field=field.field, year=int(index[0].year),
-                                      qc=qc_label, record_state=state, count=int(count)))
+                    cross.append(
+                        dict(
+                            group=group,
+                            field=field.field,
+                            year=int(index[0].year),
+                            qc=qc_label,
+                            record_state=state,
+                            count=int(count),
+                        )
+                    )
             numeric_pieces[group].append(numeric_frame)
             qc_pieces[group].append(quality_frame)
     groups = {g: pd.concat(pieces).sort_index() for g, pieces in numeric_pieces.items()}
@@ -158,14 +220,23 @@ def make_plots(correlations: pd.DataFrame, dictionary: pd.DataFrame):
     names = dictionary.short_name.tolist()
     aliases = dict(zip(fields, names))
     fig, axes = plt.subplots(1, 2, figsize=(19, 8), constrained_layout=True)
-    for ax, transform, title in zip(axes, ["raw_daily", "within_year_month_centered"],
-                                    ["Daily median", "Within-year-month centered daily median"]):
+    for ax, transform, title in zip(
+        axes,
+        ["raw_daily", "within_year_month_centered"],
+        ["Daily median", "Within-year-month centered daily median"],
+    ):
         matrix = pd.DataFrame(np.nan, index=fields, columns=fields)
         for field in fields:
             matrix.loc[field, field] = 1.0
-        subset = correlations.loc[correlations.view.eq("qc0") & correlations.period.eq("2022-2025") & correlations["transform"].eq(transform)]
+        subset = correlations.loc[
+            correlations.view.eq("qc0")
+            & correlations.period.eq("2022-2025")
+            & correlations["transform"].eq(transform)
+        ]
         for row in subset.itertuples(index=False):
-            matrix.loc[row.field_a, row.field_b] = matrix.loc[row.field_b, row.field_a] = row.spearman_rho
+            matrix.loc[row.field_a, row.field_b] = matrix.loc[row.field_b, row.field_a] = (
+                row.spearman_rho
+            )
         artist = ax.imshow(matrix, vmin=-1, vmax=1, cmap="RdBu_r")
         ax.set_xticks(range(len(fields)), names, rotation=45, ha="right")
         ax.set_yticks(range(len(fields)), names)
@@ -173,26 +244,49 @@ def make_plots(correlations: pd.DataFrame, dictionary: pd.DataFrame):
         for i in range(len(fields)):
             for j in range(len(fields)):
                 value = matrix.iloc[i, j]
-                ax.text(j, i, "NA" if pd.isna(value) else f"{value:.2f}", ha="center", va="center",
-                        fontsize=7, color="white" if abs(value) > 0.65 else "black")
-    fig.colorbar(artist, ax=axes, shrink=0.75, label="Spearman rho; matched-day n in correlations.csv")
+                ax.text(
+                    j,
+                    i,
+                    "NA" if pd.isna(value) else f"{value:.2f}",
+                    ha="center",
+                    va="center",
+                    fontsize=7,
+                    color="white" if abs(value) > 0.65 else "black",
+                )
+    fig.colorbar(
+        artist, ax=axes, shrink=0.75, label="Spearman rho; matched-day n in correlations.csv"
+    )
     fig.suptitle("Non-rain inter-variable description; not hazard association or causal ranking")
     for suffix in ["png", "svg"]:
         fig.savefig(OUT / f"correlation_heatmaps.{suffix}", dpi=160)
     plt.close(fig)
-    fig, axes = plt.subplots(2, 3, figsize=(15, 8), sharex=True, sharey=True, constrained_layout=True)
+    fig, axes = plt.subplots(
+        2, 3, figsize=(15, 8), sharex=True, sharey=True, constrained_layout=True
+    )
     for ax, (a, b) in zip(axes.flat, EXAMPLE_PAIRS):
         # Pair order follows selected-field order; examples are fixed before reading results.
-        subset = correlations.loc[correlations.field_a.eq(a) & correlations.field_b.eq(b) &
-                                  correlations.view.eq("qc0") & ~correlations.period.eq("2022-2025")]
-        for transform, label, marker in [("raw_daily", "Daily median", "o"),
-                                          ("within_year_month_centered", "Year-month centered", "s")]:
+        subset = correlations.loc[
+            correlations.field_a.eq(a)
+            & correlations.field_b.eq(b)
+            & correlations.view.eq("qc0")
+            & ~correlations.period.eq("2022-2025")
+        ]
+        for transform, label, marker in [
+            ("raw_daily", "Daily median", "o"),
+            ("within_year_month_centered", "Year-month centered", "s"),
+        ]:
             part = subset.loc[subset["transform"].eq(transform)].sort_values("period")
             ax.plot(part.period.astype(int), part.spearman_rho, marker=marker, label=label)
             if transform == "raw_daily":
                 for row in part.itertuples(index=False):
-                    ax.annotate(f"n={row.n_matched_days}", (int(row.period), row.spearman_rho),
-                                xytext=(0, 7), textcoords="offset points", ha="center", fontsize=7)
+                    ax.annotate(
+                        f"n={row.n_matched_days}",
+                        (int(row.period), row.spearman_rho),
+                        xytext=(0, 7),
+                        textcoords="offset points",
+                        ha="center",
+                        fontsize=7,
+                    )
         ax.set_title(f"{aliases[a]} vs {aliases[b]}")
         ax.axhline(0, color="gray", lw=0.7)
         ax.set_ylim(-1.08, 1.12)
@@ -200,27 +294,47 @@ def make_plots(correlations: pd.DataFrame, dictionary: pd.DataFrame):
         ax.grid(alpha=0.2)
     axes[0, 0].legend(fontsize=8, loc="lower left")
     fig.supylabel("Spearman rho")
-    fig.suptitle("QC0 yearly variability: six preselected examples, not importance ranking\nAnnotations are matched-day n; no independent-sample or significance claim")
+    fig.suptitle(
+        "QC0 yearly variability: six preselected examples, not importance ranking\nAnnotations are matched-day n; no independent-sample or significance claim"
+    )
     for suffix in ["png", "svg"]:
         fig.savefig(OUT / f"year_variability.{suffix}", dpi=160)
     plt.close(fig)
 
 
 def build_report(dictionary, coverage, daily_coverage, correlations, sensitivity, verification):
-    field_rows = "\n".join(f"| {r.group} | `{r.field}` | `{r.qc_field}` | {r.physical_group} | {r.physical_interpretation_I} |" for r in dictionary.itertuples(index=False))
+    field_rows = "\n".join(
+        f"| {r.group} | `{r.field}` | `{r.qc_field}` | {r.physical_group} | {r.physical_interpretation_I} |"
+        for r in dictionary.itertuples(index=False)
+    )
     example_rows = []
     for a, b in EXAMPLE_PAIRS:
-        example = correlations.loc[correlations.field_a.eq(a) & correlations.field_b.eq(b) & correlations.view.eq("qc0")]
-        raw = example.loc[example.period.eq("2022-2025") & example["transform"].eq("raw_daily")].iloc[0]
-        centered = example.loc[example.period.eq("2022-2025") & example["transform"].eq("within_year_month_centered")].iloc[0]
+        example = correlations.loc[
+            correlations.field_a.eq(a) & correlations.field_b.eq(b) & correlations.view.eq("qc0")
+        ]
+        raw = example.loc[
+            example.period.eq("2022-2025") & example["transform"].eq("raw_daily")
+        ].iloc[0]
+        centered = example.loc[
+            example.period.eq("2022-2025") & example["transform"].eq("within_year_month_centered")
+        ].iloc[0]
         years = example.loc[~example.period.eq("2022-2025") & example["transform"].eq("raw_daily")]
-        example_rows.append(f"| `{a}` / `{b}` | {raw.n_matched_days} | {raw.spearman_rho:.3f} | {centered.spearman_rho:.3f} | {years.spearman_rho.min():.3f}～{years.spearman_rho.max():.3f} |")
-    ref_coverage = daily_coverage.loc[daily_coverage.year.isin(YEARS) & daily_coverage.view.eq("qc0")]
-    changed = sensitivity.loc[sensitivity["transform"].eq("raw_daily") & sensitivity.period.eq("2022-2025")]
+        example_rows.append(
+            f"| `{a}` / `{b}` | {raw.n_matched_days} | {raw.spearman_rho:.3f} | {centered.spearman_rho:.3f} | {years.spearman_rho.min():.3f}～{years.spearman_rho.max():.3f} |"
+        )
+    ref_coverage = daily_coverage.loc[
+        daily_coverage.year.isin(YEARS) & daily_coverage.view.eq("qc0")
+    ]
+    changed = sensitivity.loc[
+        sensitivity["transform"].eq("raw_daily") & sensitivity.period.eq("2022-2025")
+    ]
     source_reference = coverage.loc[coverage.year.isin(YEARS)]
-    min_days, max_days = int(ref_coverage.groupby("field").available_daily_medians.sum().min()), int(ref_coverage.groupby("field").available_daily_medians.sum().max())
+    min_days, max_days = (
+        int(ref_coverage.groupby("field").available_daily_medians.sum().min()),
+        int(ref_coverage.groupby("field").available_daily_medians.sum().max()),
+    )
     max_delta = changed.delta_rho.abs().max()
-    report = f'''# 第一问前置探索：变量物理分组与非降水关系
+    report = f"""# 第一问前置探索：变量物理分组与非降水关系
 
 生成：{verification["checked_at_utc"]}。本报告是第一问的前置子步骤，尚未完成大气边界层结构、极端天气过程或泥石流关联分析，不给出最终“前5因素”。
 F=本地原记录/表头或已保存官方定义可核验；I=按字段名作的物理解释或样本内解释；U=尚无足够证据。
@@ -286,7 +400,7 @@ QC0+4敏感性视图中，总体原日值66对的最大|Δρ|为{max_delta:.6f}�
 
 ## 5. 复现与核验
 
-运行：`D:/miniforge3/Scripts/conda.exe run -n mc-base --no-capture-output python scripts/analyze_variable_relations.py`。
+运行：`conda run -n mc-base --no-capture-output python scripts/analyze_variable_relations.py`。
 合成边界测试：同环境运行`python -m unittest discover -s tests -p test_variable_relations.py -v`。
 产物仅写`output/variable_relations/`与本报告；CSV使用UTF-8 BOM。
 
@@ -303,7 +417,7 @@ QC0+4敏感性视图中，总体原日值66对的最大|Δρ|为{max_delta:.6f}�
 - [x] 只在授权新文件与输出范围写入；未提交、切换分支或调整Git状态，未修改原包或约束；未新增依赖、插补、降水特征或灾害标签。
 - [x] 完成12字段两独立描述视图、逐对n、逐年/总体相关、中心化敏感性与图。
 - [x] 按verification-before-completion核验原包/配置和数值保真；最终测试输出由执行者另行报告。
-'''
+"""
     (ROOT / "docs/variable-relations.md").write_text(report, encoding="utf-8")
 
 
@@ -318,23 +432,26 @@ def main():
     hashes_before = {r["archive"]: sha256(ROOT / "data/附件" / r["archive"]) for r in manifest}
     if not all(hashes_before[r["archive"]] == r["sha256"] for r in manifest):
         raise ValueError("Original archive hash mismatch before analysis")
-    selected = pd.DataFrame(SELECTED, columns=["group", "field", "short_name", "physical_group", "physical_interpretation_I"])
+    selected = pd.DataFrame(
+        SELECTED,
+        columns=["group", "field", "short_name", "physical_group", "physical_interpretation_I"],
+    )
     source_dictionary = pd.read_csv(TAB / "field_dictionary.csv")
-    dictionary = selected.merge(source_dictionary, on=["group", "field"], how="left", validate="one_to_one")
+    dictionary = selected.merge(
+        source_dictionary, on=["group", "field"], how="left", validate="one_to_one"
+    )
     if dictionary.qc_field.isna().any() or not dictionary.role.eq("measurement").all():
         raise ValueError("Selected fields require exact provided QC mapping")
-    official = ROOT / "output/metadata_review/official_pages/attachment_1_metadata_export.json"
-    detail_path = official.with_name("attachment_1_standard_detail.json")
-    metadata = json.loads(official.read_text(encoding="utf-8-sig"))
-    detail = json.loads(detail_path.read_text(encoding="utf-8-sig"))["context"]["metadataVO"]
-    start, end = declared_window(detail, metadata)
+    start, end, window_evidence = load_observation_window()
     archive = next(ROOT / "data/附件" / r["archive"] for r in manifest if r["attachment"] == 1)
     values, quality, coverage, cross, groups = load_selected(archive, dictionary, start, end)
     source_fidelity = {}
     for group, raw_numeric in groups.items():
         prior = pd.read_parquet(TAB / f"{group.lower()}_diagnostic.parquet")[raw_numeric.columns]
-        source_fidelity[group] = bool(prior.index.equals(raw_numeric.index) and
-            np.array_equal(prior.to_numpy(), raw_numeric.to_numpy(), equal_nan=True))
+        source_fidelity[group] = bool(
+            prior.index.equals(raw_numeric.index)
+            and np.array_equal(prior.to_numpy(), raw_numeric.to_numpy(), equal_nan=True)
+        )
     daily_views, daily_counts, centered_views, summaries, correlations = {}, {}, {}, [], []
     for view, qc_set in VIEWS.items():
         daily, counts = daily_medians(values, quality, qc_set)
@@ -346,22 +463,47 @@ def main():
             correlations.append(pairwise_spearman(frame, view, transform))
         for year in sorted(set(daily.index.year)):
             for field in daily:
-                part, count = daily.loc[daily.index.year == year, field], counts.loc[counts.index.year == year, field]
-                summaries.append(dict(view=view, year=year, field=field, calendar_day_labels=len(part),
-                    available_daily_medians=int(part.notna().sum()), unavailable_daily_medians=int(part.isna().sum()),
-                    numeric_accepted_hour_labels=int(count.sum()), minimum_labels_for_median=MIN_LABELS))
+                part, count = (
+                    daily.loc[daily.index.year == year, field],
+                    counts.loc[counts.index.year == year, field],
+                )
+                summaries.append(
+                    dict(
+                        view=view,
+                        year=year,
+                        field=field,
+                        calendar_day_labels=len(part),
+                        available_daily_medians=int(part.notna().sum()),
+                        unavailable_daily_medians=int(part.isna().sum()),
+                        numeric_accepted_hour_labels=int(count.sum()),
+                        minimum_labels_for_median=MIN_LABELS,
+                    )
+                )
     corr = pd.concat(correlations, ignore_index=True)
     daily_coverage = pd.DataFrame(summaries)
     merge_keys = ["transform", "period", "field_a", "field_b"]
-    sensitivity = corr.loc[corr.view.eq("qc0")].drop(columns="view").merge(
-        corr.loc[corr.view.eq("qc0_plus4")].drop(columns="view"), on=merge_keys,
-        suffixes=("_qc0", "_qc0_plus4"), validate="one_to_one")
+    sensitivity = (
+        corr.loc[corr.view.eq("qc0")]
+        .drop(columns="view")
+        .merge(
+            corr.loc[corr.view.eq("qc0_plus4")].drop(columns="view"),
+            on=merge_keys,
+            suffixes=("_qc0", "_qc0_plus4"),
+            validate="one_to_one",
+        )
+    )
     sensitivity["delta_rho"] = sensitivity.spearman_rho_qc0_plus4 - sensitivity.spearman_rho_qc0
-    sensitivity["delta_matched_days"] = sensitivity.n_matched_days_qc0_plus4 - sensitivity.n_matched_days_qc0
+    sensitivity["delta_matched_days"] = (
+        sensitivity.n_matched_days_qc0_plus4 - sensitivity.n_matched_days_qc0
+    )
     independent_n, coefficient_check = [], []
     for row in corr.itertuples(index=False):
         daily = daily_views[row.view] if row.transform == "raw_daily" else centered_views[row.view]
-        selected_days = daily.loc[daily.index.year.isin(YEARS)] if row.period == "2022-2025" else daily.loc[daily.index.year == int(row.period)]
+        selected_days = (
+            daily.loc[daily.index.year.isin(YEARS)]
+            if row.period == "2022-2025"
+            else daily.loc[daily.index.year == int(row.period)]
+        )
         a, b = selected_days[row.field_a], selected_days[row.field_b]
         valid = a.notna() & b.notna()
         independent_n.append(int(valid.sum()) == row.n_matched_days)
@@ -371,48 +513,106 @@ def main():
             coefficient_check.append(bool(np.isclose(row.spearman_rho, expected, atol=1e-12)))
     checks = {
         "all_8_original_archive_hashes_match_manifest_before_and_after": all(
-            hashes_before[r["archive"]] == r["sha256"] == sha256(ROOT / "data/附件" / r["archive"]) for r in manifest),
+            hashes_before[r["archive"]] == r["sha256"] == sha256(ROOT / "data/附件" / r["archive"])
+            for r in manifest
+        ),
         "constraints_file_unchanged": sha256(config_path) == constraints_hash,
-        "12_nonrain_fields_have_exact_provided_qc": len(dictionary) == 12 and dictionary.qc_field.notna().all() and
-            set(dictionary.group) == {"MET", "RADM", "SOIL"} and not dictionary.field.str.contains("precip|rain", case=False).any(),
-        "all_source_numeric_values_exactly_match_existing_independent_audit": all(source_fidelity.values()),
-        "declared_qc_cross_counts_reconcile": int(cross["count"].sum()) == int(coverage.declared_labels.sum()),
-        "source_numeric_counts_partition_inside_outside": bool(coverage.source_numeric.eq(coverage.declared_numeric + coverage.outside_declared_numeric).all()),
-        "source_full_hour_labels_are_52584_for_each_field": all(len(group) == 52584 for group in groups.values()),
-        "qc0_and_qc0_plus4_views_independent_and_counts_nested": bool((daily_counts["qc0"] <= daily_counts["qc0_plus4"]).all().all()),
+        "12_nonrain_fields_have_exact_provided_qc": len(dictionary) == 12
+        and dictionary.qc_field.notna().all()
+        and set(dictionary.group) == {"MET", "RADM", "SOIL"}
+        and not dictionary.field.str.contains("precip|rain", case=False).any(),
+        "all_source_numeric_values_exactly_match_existing_independent_audit": all(
+            source_fidelity.values()
+        ),
+        "declared_qc_cross_counts_reconcile": int(cross["count"].sum())
+        == int(coverage.declared_labels.sum()),
+        "source_numeric_counts_partition_inside_outside": bool(
+            coverage.source_numeric.eq(
+                coverage.declared_numeric + coverage.outside_declared_numeric
+            ).all()
+        ),
+        "source_full_hour_labels_are_52584_for_each_field": all(
+            len(group) == 52584 for group in groups.values()
+        ),
+        "qc0_and_qc0_plus4_views_independent_and_counts_nested": bool(
+            (daily_counts["qc0"] <= daily_counts["qc0_plus4"]).all().all()
+        ),
         "each_daily_median_exists_iff_18_accepted_numeric_labels": all(
-            daily_views[view].notna().equals(daily_counts[view].ge(MIN_LABELS)) for view in VIEWS),
-        "daily_counts_equal_selected_hourly_acceptance": all(int(daily_counts[view].sum().sum()) ==
-            int((values.notna() & quality.isin(qc_set)).sum().sum()) for view, qc_set in VIEWS.items()),
-        "reference_calendar_has_1461_days": all(len(daily.loc[daily.index.year.isin(YEARS)]) == 1461 for daily in daily_views.values()),
-        "1320_unique_pair_view_transform_period_rows": len(corr) == 1320 and not corr.duplicated(["view"] + merge_keys).any(),
+            daily_views[view].notna().equals(daily_counts[view].ge(MIN_LABELS)) for view in VIEWS
+        ),
+        "daily_counts_equal_selected_hourly_acceptance": all(
+            int(daily_counts[view].sum().sum())
+            == int((values.notna() & quality.isin(qc_set)).sum().sum())
+            for view, qc_set in VIEWS.items()
+        ),
+        "reference_calendar_has_1461_days": all(
+            len(daily.loc[daily.index.year.isin(YEARS)]) == 1461 for daily in daily_views.values()
+        ),
+        "1320_unique_pair_view_transform_period_rows": len(corr) == 1320
+        and not corr.duplicated(["view"] + merge_keys).any(),
         "all_pairwise_n_match_independent_boolean_overlap": all(independent_n),
         "all_available_coefficients_match_independent_scipy_spearman": all(coefficient_check),
-        "unavailable_pairwise_coefficients_remain_missing": bool(corr.loc[~corr.status.eq("ok"), "spearman_rho"].isna().all()),
-        "final_labels_rain_features_and_imputation_remain_deferred_or_forbidden": constraints["prediction"]["final_time_labels"] == "deferred" and
-            not constraints["prediction"]["automatic_stage_time_equivalence"] and constraints["precipitation"]["final_rolling_features"] == "deferred" and
-            not constraints["raw_inputs"]["new_imputation_allowed"],
+        "unavailable_pairwise_coefficients_remain_missing": bool(
+            corr.loc[~corr.status.eq("ok"), "spearman_rho"].isna().all()
+        ),
+        "final_labels_rain_features_and_imputation_remain_deferred_or_forbidden": constraints[
+            "prediction"
+        ]["final_time_labels"]
+        == "deferred"
+        and not constraints["prediction"]["automatic_stage_time_equivalence"]
+        and constraints["precipitation"]["final_rolling_features"] == "deferred"
+        and not constraints["raw_inputs"]["new_imputation_allowed"],
     }
     checks = {key: bool(value) for key, value in checks.items()}
-    verification = dict(passed=all(checks.values()), checked_at_utc=datetime.now(timezone.utc).isoformat(), checks=checks,
-        source_hashes=hashes_before, constraints_sha256=constraints_hash, source_numeric_fidelity_by_group=source_fidelity,
-        dictionary_sha256=sha256(TAB / "field_dictionary.csv"), official_metadata_sha256=sha256(official),
-        official_detail_sha256=sha256(detail_path),
-        declared_label_window={"start": str(start), "end": str(end), "timezone": "UTC+8", "support_interval": None},
-        method={"min_numeric_hour_labels_per_day": MIN_LABELS, "min_paired_day_labels": MIN_PAIRS,
-                "reference_years": list(YEARS), "views": {key: sorted(value) for key, value in VIEWS.items()},
-                "new_imputation": False, "precipitation_features": False, "hazard_labels": False,
-                "p_values": False, "physical_interpretation_evidence": "I: name-based"})
-    (OUT / "verification.json").write_text(json.dumps(verification, ensure_ascii=False, indent=2), encoding="utf-8")
+    verification = dict(
+        passed=all(checks.values()),
+        checked_at_utc=datetime.now(timezone.utc).isoformat(),
+        checks=checks,
+        source_hashes=hashes_before,
+        constraints_sha256=constraints_hash,
+        source_numeric_fidelity_by_group=source_fidelity,
+        dictionary_sha256=sha256(TAB / "field_dictionary.csv"),
+        observation_window_reference=window_evidence,
+        declared_label_window={
+            "start": str(start),
+            "end": str(end),
+            "timezone": "UTC+8",
+            "support_interval": None,
+        },
+        method={
+            "min_numeric_hour_labels_per_day": MIN_LABELS,
+            "min_paired_day_labels": MIN_PAIRS,
+            "reference_years": list(YEARS),
+            "views": {key: sorted(value) for key, value in VIEWS.items()},
+            "new_imputation": False,
+            "precipitation_features": False,
+            "hazard_labels": False,
+            "p_values": False,
+            "physical_interpretation_evidence": "I: name-based",
+        },
+    )
+    (OUT / "verification.json").write_text(
+        json.dumps(verification, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     for key, ok in checks.items():
         print(f"{'PASS' if ok else 'FAIL'} {key}", flush=True)
     if not verification["passed"]:
         raise SystemExit("Variable-relation verification failed")
-    for name, frame in [("selected_fields.csv", dictionary), ("source_coverage.csv", coverage), ("qc_coverage.csv", cross),
-                         ("daily_coverage.csv", daily_coverage), ("correlations.csv", corr), ("sensitivity_comparison.csv", sensitivity)]:
+    for name, frame in [
+        ("selected_fields.csv", dictionary),
+        ("source_coverage.csv", coverage),
+        ("qc_coverage.csv", cross),
+        ("daily_coverage.csv", daily_coverage),
+        ("correlations.csv", corr),
+        ("sensitivity_comparison.csv", sensitivity),
+    ]:
         write_csv(name, frame)
     for view in VIEWS:
-        for prefix, frame in [("daily_medians", daily_views[view]), ("daily_counts", daily_counts[view]), ("daily_centered", centered_views[view])]:
+        for prefix, frame in [
+            ("daily_medians", daily_views[view]),
+            ("daily_counts", daily_counts[view]),
+            ("daily_centered", centered_views[view]),
+        ]:
             frame.index.name = "label_calendar_date_BeijingUTC8"
             write_csv(f"{prefix}_{view}.csv", frame, index=True)
     make_plots(corr, dictionary)

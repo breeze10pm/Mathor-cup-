@@ -1,0 +1,6 @@
+# Optional document environment; not needed by the modeling pipeline.
+# Direct dependency versions used to generate and check the project roadmap.
+python-docx==1.2.0
+pypdf==6.10.0
+pypdfium2==5.14.0
+Pillow==12.3.0
