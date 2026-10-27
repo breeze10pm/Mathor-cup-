@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "inputs": [
+    {
+      "topic_number": 3,
+      "dataset_id": "147456c9-f740-4259-a2ea-fd7423613510",
+      "title": "2026年8月26日日喀则市吉隆县泥石流灾害区降水和云与水成物数据",
+      "archive_path": "data/2026年8月26日日喀则市吉隆县泥石流灾害区降水和云与水成物数据/吉隆县GFS_降水云与水成物产品_20260825T00Z.zip",
+      "bytes": 120367,
+      "sha256": "f741c0fd5a7504fd02bc2524054e75c0363dee90901308b57055e79bc9936928",
+      "status": "present_locally_user_downloaded",
+      "source_notes": "原ZIP保留；检查时未解压覆盖或修改。"
+    },
+    {
+      "topic_number": 1,
+      "title": "西藏日喀则市吉隆县泥石流灾害区岩屑坡数据",
+      "source_directory": "data/西藏日喀则市吉隆县泥石流灾害区岩屑坡数据",
+      "status": "present_locally_user_downloaded",
+      "source_notes": "EPSG:4326，261个面；源Shapefile缺少.shx。复算脚本在临时副本恢复索引并输出投影GeoPackage，不改源文件。"
+    },
+    {
+      "topic_number": 24,
+      "title": "西藏日喀则市吉隆县泥石流灾害区河流水系数据",
+      "source_directory": "data/西藏日喀则市吉隆县泥石流灾害区河流水系数据",
+      "status": "present_locally_user_downloaded",
+      "source_notes": "EPSG:4326，11条线；属性仅Id且均为0。"
+    }
+  ]
+}

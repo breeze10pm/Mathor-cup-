@@ -1,6 +1,6 @@
 # MathorCup赛道B项目
 
-完成情况统一查看[项目进度](PROGRESS.md)。第一问首版入口为[案例对照报告](docs/question1-v1.md)，单独复算执行`python scripts/complete_question1.py`，无需重跑审计。最终灾害精确标签、关键降水特征和预报评价仍未定义；科学边界见[分析约束](config/analysis-constraints.yml)及[待确认清单](docs/pending-questions.md)。
+完成情况统一查看[项目进度](PROGRESS.md)。第一问首版入口为[案例对照报告](docs/question1-v1.md)，单独复算执行`python scripts/complete_question1.py`，无需重跑审计。第二问QGIS首批图层见[第二问首版记录](docs/question2-v0.md)，复算执行`python scripts/prepare_question2_layers.py`。灾害标签、沉积厚度及模型验证仍受来源和配准资料限制；科学边界见[分析约束](config/analysis-constraints.yml)及[待确认清单](docs/pending-questions.md)。
 
 ## 在其他电脑复现
 
