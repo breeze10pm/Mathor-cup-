@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "analysis_type": "retrospective_single_case_background_contrast",
+  "reference_years": [2022, 2023, 2024, 2025],
+  "reference_calendar_half_width_days": 15,
+  "window_hours": [24, 48, 72],
+  "primary_window_hours": 72,
+  "last_label_guard_hours": 1,
+  "minimum_window_coverage": 0.75,
+  "minimum_reference_windows": 60,
+  "primary_qc": [0],
+  "sensitivity_qc": [0, 4],
+  "ranking": "descending absolute signed empirical rank contrast D=2p-1; one representative per predefined physical family; deterministic feature-order tie-break",
+  "causal_or_hazard_probability_interpretation": false,
+  "randomness": "none; no stochastic fitting or resampling"
+}

@@ -1,6 +1,6 @@
 # MathorCup赛道B项目
 
-当前位于第一问的观测解释与特征探索阶段。最终灾害标签、关键降水特征和模型评价尚未定义；科学边界见[分析约束](config/analysis-constraints.yml)及[待确认清单](docs/pending-questions.md)。
+完成情况统一查看[项目进度](PROGRESS.md)。第一问首版入口为[案例对照报告](docs/question1-v1.md)，单独复算执行`python scripts/complete_question1.py`，无需重跑审计。最终灾害精确标签、关键降水特征和预报评价仍未定义；科学边界见[分析约束](config/analysis-constraints.yml)及[待确认清单](docs/pending-questions.md)。
 
 ## 在其他电脑复现
 

@@ -20,6 +20,7 @@ STEPS = {
     "exploration": ("explore_observations.py", []),
     "relations": ("analyze_variable_relations.py", []),
     "profiles": ("analyze_vertical_profiles.py", []),
+    "question1": ("complete_question1.py", []),
     "metadata": ("fetch_official_metadata.py", ["--refresh"]),
 }
 DEFAULT = "tabular,spatial,report,verify,exploration,relations,profiles"

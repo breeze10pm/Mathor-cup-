@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "date_from_problem": "2026-08-26",
+  "timezone": "Asia/Shanghai",
+  "utc_offset": "+08:00",
+  "source_status": "user_reported_not_independently_verified",
+  "source_note": "用户本轮明确提供10:52冰崩起始、10:59到达口岸及UTC+8；未提供这些时刻的原始调查或观测记录。日期沿用赛题，仍需与原始时间来源核对。",
+  "ice_collapse_onset": "2026-08-26T10:52:00+08:00",
+  "arrival_at_port": "2026-08-26T10:59:00+08:00",
+  "reported_precision": "minute; second=00 is serialization only, not measured second precision",
+  "debris_flow_trigger_exact": null,
+  "trigger_constraint": {
+    "lower_inclusive": "2026-08-26T10:52:00+08:00",
+    "upper_inclusive": "2026-08-26T10:59:00+08:00",
+    "conditional_assumption": "同一灾害链的泥石流触发不早于所报告的冰崩起始，且不晚于该灾害链到达口岸；非独立核验的触发区间。分钟报告本身的不确定性尚未量化。",
+    "probability_distribution": null,
+    "confidence_level": null
+  },
+  "problem_literal_time": "2026-08-26 10:30",
+  "conflict_note": "赛题10:30与用户提供的10:52/10:59存在时间线不一致；保留原值，未将10:30解释为报告或触发时刻。",
+  "image": {
+    "project_path": "data/evidence/before_after_comparison.jpg",
+    "source": "user-supplied CCTV News comparison screenshot",
+    "georeferencing": null,
+    "acquisition_times_verified": false,
+    "permitted_use": "qualitative channel and surface-change illustration only; no precise mapping, date validation, depth or volume estimation",
+    "sha256": "da96e53938548e37580bbaa6c8844d012c03903f726a6f8505e0d5c9ffe1f86c"
+  }
+}

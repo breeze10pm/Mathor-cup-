@@ -53,8 +53,11 @@ case_reference:
   debris_flow_trigger_time: null
   arrival_time_at_port: null
   report_time: null
+  user_reported_event_context: config/event-context.json
+  user_reported_event_context_status: conditional_working_timeline_not_independently_verified
 prediction:
   final_time_labels: deferred
+  uncertain_event_time_constraint_allowed: true
   automatic_stage_time_equivalence: false
   final_95_percent_coverage_claim: deferred
 allowed_work:
