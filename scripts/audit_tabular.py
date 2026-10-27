@@ -1,7 +1,8 @@
 """审计官方气象 CSV、逐日气温 Excel 与压缩包清单。
 
 运行：conda run -n mc-base --no-capture-output python scripts/audit_tabular.py
-原始附件只读。候选缺测标记仅用于诊断，不替代官方 QC 规则，不填补数据。
+原始附件只读。按官方缺失码统计，不新增插补、不自动过滤QC。
+案例时刻阶段/时区未确认，不据此创建预测标签或累计降水特征。
 """
 
 from __future__ import annotations
@@ -21,15 +22,18 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
 INPUT = ROOT / "data" / "附件"
 OUTPUT = ROOT / "output" / "data_audit" / "tabular"
-EVENT = pd.Timestamp("2026-08-26 10:30")  # 题设名义时间；源数据时区待确认。
+CONSTRAINTS = yaml.safe_load((ROOT / "config/analysis-constraints.yml").read_text(encoding="utf-8"))
+REFERENCE_LITERAL = pd.Timestamp(CONSTRAINTS["case_reference"]["literal_datetime_from_problem"])
 AUDIT_DATE = pd.Timestamp("2026-10-27")
 FUTURE_START = AUDIT_DATE + pd.Timedelta(days=1)
-SENTINELS = [-99999.0, -9999.9, -9999.0, 9999.0, 9999.9, 99999.0]
+SENTINELS = [CONSTRAINTS["hourly_observations"]["official_missing_value"]]
+QC_DEFINITIONS = CONSTRAINTS["hourly_observations"]["qc_definitions"]
 GROUP_LABELS = {"MET": "气象梯度", "RADM": "辐射", "SOIL": "土壤", "FLUX": "湍流"}
 plt.rcParams.update(
     {
@@ -98,9 +102,9 @@ def make_inventory() -> tuple[dict[int, Path], list[dict]]:
 
 def field_description(group: str, field: str) -> str:
     if field == "Timestamp":
-        return "原始时间标签；时区、小时统计区间及起止标记未说明"
+        return "观测标签为北京时间UTC+8（官网）；小时区间起止语义未说明"
     if field.startswith("QC_"):
-        return "质量控制码；码值含义未提供，不将非零值直接判为无效"
+        return "官网QC字典：0正确/1可疑/2错误/4插补/8缺失/9未质控；本审计不自动过滤"
     base = field.split("(")[0]
     descriptions = {
         "WS": "风速",
@@ -219,7 +223,7 @@ def audit_hourly(path: Path) -> dict:
                 "last_diagnostic_nonmissing_timestamp": str(latest),
                 "post_audit_date_rows": int(future.sum()),
                 "post_audit_date_available_cells": int(available.loc[future].sum().sum()),
-                "timezone": "not specified",
+                "timezone": "Beijing Time UTC+8; TPDC metadata confirmed",
                 "hour_interval_definition": "not specified",
             }
             file_rows.append(row)
@@ -259,6 +263,7 @@ def audit_hourly(path: Path) -> dict:
                                 "year": year,
                                 "field": column,
                                 "code": str(code),
+                                "meaning_official": QC_DEFINITIONS.get(code, "未定义代码"),
                                 "count": int(count),
                             }
                         )
@@ -319,9 +324,9 @@ def audit_hourly(path: Path) -> dict:
                         "diagnostic_available_fraction": float(fraction),
                     }
                 )
-            if year == EVENT.year:
-                # 小时标签的区间语义未说明；排除包含10:30的整个10点小时。
-                cutoff = EVENT.floor("h")
+            if year == REFERENCE_LITERAL.year:
+                # 仅截取相同字面日期的日历窗，不声称与真实灾害时刻对齐。
+                cutoff = REFERENCE_LITERAL.floor("h")
                 time_available = available.set_axis(pd.DatetimeIndex(times))
                 for hours in (6, 24, 72, 168, 720):
                     window = time_available.loc[
@@ -398,7 +403,7 @@ def audit_hourly(path: Path) -> dict:
     write_csv("hourly_field_quality.csv", quality_rows)
     write_csv("qc_code_counts.csv", qc_rows)
     write_csv("monthly_availability.csv", month_rows)
-    write_csv("pre_event_availability.csv", window_rows)
+    write_csv("calendar_window_availability.csv", window_rows)
     write_csv("cross_year_exact_comparison.csv", pair_rows)
     return {
         "files": file_rows,
@@ -459,7 +464,7 @@ def audit_daily_temperature(path: Path) -> dict:
                             len(expected.difference(pd.DatetimeIndex(times.dropna()))) == 0
                         ),
                         "county_columns": ";".join(numeric.columns),
-                        "unit": "not explicitly stated in workbook headers",
+                        "unit": "degree Celsius; TPDC attachment 2 instructions confirmed",
                     }
                 )
                 numeric.index = pd.DatetimeIndex(times, name="date")
@@ -503,14 +508,14 @@ def make_figures(hourly: dict, daily: dict) -> None:
     )
     ax.set_xticks(range(len(table.columns)), table.columns)
     ax.set_yticks(range(len(order)), [f"{name} {GROUP_LABELS[name]}" for name in order])
-    ax.set_title("小时观测疑似缺测占比（按测量单元格）")
+    ax.set_title("小时观测缺测与非数值标记占比（未按QC进一步筛选）")
     ax.set_xlabel("年份")
     for i in range(len(table)):
         for j in range(len(table.columns)):
             value = table.iloc[i, j]
             label = "<0.1%" if 0 < value < 0.1 else f"{value:.1f}%"
             ax.text(j, i, label, ha="center", va="center", color="black")
-    figure.colorbar(image, ax=ax, label="空值、非数值标记或候选哨兵值（%）")
+    figure.colorbar(image, ax=ax, label="空值、非数值标记或官方缺失码（%）")
     save_figure(figure, "hourly_missingness")
 
     availability = []
@@ -539,26 +544,25 @@ def make_figures(hourly: dict, daily: dict) -> None:
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%m月"))
     ax.set_xticks(pd.date_range("2026-01-01", "2026-12-01", freq="MS"))
-    ax.axvline(EVENT, color="#d7263d", lw=1.4, label="题设事件时间")
     ax.axvline(FUTURE_START, color="#ef8a17", lw=1.4, linestyle="--", label="审计日之后")
     ax.set_title("2026 年逐日诊断可用率：有时间标签不等于有有效观测")
     ax.legend(loc="lower left", bbox_to_anchor=(0, 1.02), ncols=2, frameon=False)
     figure.colorbar(image, ax=ax, label="诊断非缺测测量单元格（%）")
     save_figure(figure, "availability_2026")
 
-    plot_start = (EVENT - pd.Timedelta(days=14)).normalize()
-    plot_end = (EVENT + pd.Timedelta(days=2)).ceil("D")
+    plot_start = (REFERENCE_LITERAL - pd.Timedelta(days=14)).normalize()
+    plot_end = (REFERENCE_LITERAL + pd.Timedelta(days=2)).ceil("D")
     met = hourly["groups"]["MET"].loc[plot_start:plot_end]
     soil = hourly["groups"]["SOIL"].loc[met.index.min() : met.index.max()]
     flux = hourly["groups"]["FLUX"].loc[met.index.min() : met.index.max()]
     figure, axes = plt.subplots(4, 1, figsize=(11, 9), sharex=True, layout="constrained")
-    rain = met["Precip(mm)"].resample("D").sum(min_count=24)
-    axes[0].bar(rain.index + pd.Timedelta(hours=12), rain.values, width=0.8, color="#477998")
-    axes[0].set_ylabel("降水字段日合计\n(mm)")
+    rain = met["Precip(mm)"]
+    axes[0].plot(rain.index, rain.values, lw=1, color="#477998")
+    axes[0].set_ylabel("原始Precip记录\n(mm)")
     axes[0].text(
         0.01,
         0.95,
-        "按小时值相加；累计方式待核实，有缺测的日不计算",
+        "逐条展示，不作累计；累计方式与小时区间待确认",
         transform=axes[0].transAxes,
         va="top",
         fontsize=9,
@@ -579,14 +583,13 @@ def make_figures(hourly: dict, daily: dict) -> None:
         ax.set_ylabel(ylabel)
         ax.legend(loc="upper left", fontsize=8, frameon=False)
     for ax in axes:
-        ax.axvline(EVENT, color="#d7263d", linestyle="--", lw=1)
         last_available = met.dropna(how="all").index.max()
         ax.axvspan(last_available, plot_end, color="#eeeeee", zorder=-1)
         ax.set_xlim(plot_start, plot_end)
         ax.grid(alpha=0.2)
     axes[-1].xaxis.set_major_formatter(mdates.DateFormatter("%m-%d"))
-    axes[-1].set_xlabel("源文件名义时间（时区与小时统计区间待确认）")
-    axes[0].set_title("事件窗口观测诊断：红线为题设时间，灰区为小时数据截止后")
+    axes[-1].set_xlabel("观测时间标签（北京时间UTC+8；小时统计区间未明）")
+    axes[0].set_title("8月观测描述：灰区为数据截止后；未标定灾害阶段时刻")
     save_figure(figure, "event_window_diagnostics")
 
     full = (
@@ -598,7 +601,7 @@ def make_figures(hourly: dict, daily: dict) -> None:
     full.plot(ax=ax, marker="o", markersize=3, lw=1.2)
     ax.set_title("五县完整日历年的气温均值；不完整年份不参与年度对比")
     ax.set_xlabel("年份")
-    ax.set_ylabel("源表数值均值（单位需由来源说明确认）")
+    ax.set_ylabel("年均2米气温（℃，单位由官网说明确认）")
     ax.set_xticks(range(int(full.index.min()), int(full.index.max()) + 1, 2))
     ax.legend(ncols=5, fontsize=9, frameon=False)
     ax.grid(alpha=0.2)
@@ -616,18 +619,21 @@ def main() -> None:
     summary = {
         "audit_date": str(AUDIT_DATE.date()),
         "generated_at_local": datetime.now().astimezone().isoformat(),
-        "event_time_as_problem_states": str(EVENT),
+        "case_literal_datetime_untyped": str(REFERENCE_LITERAL),
         "source_archives": inventory,
         "policies": {
             "raw_inputs": "read only",
             "candidate_missing_codes": SENTINELS,
-            "candidate_code_confirmation": "not provided; masks are diagnostic views only",
-            "qc_semantics": "not provided; no automatic QC filtering",
+            "candidate_code_confirmation": "9999.9 confirmed by TPDC instructions; original inputs unchanged",
+            "qc_semantics": QC_DEFINITIONS,
+            "automatic_qc_filtering": False,
             "missing_value_imputation": "none",
-            "timezone": "unknown; no implicit conversion",
-            "pre_event_window": "timestamp < 2026-08-26 10:00; interval semantics still require confirmation",
+            "timezone": "hourly observations UTC+8 confirmed; case time zone remains unknown",
+            "calendar_window": "literal calendar crop only; not an aligned pre-trigger window",
             "diagnostic_mean_plot": "daily mean shown only with at least 18 nonmissing hours",
-            "diagnostic_rain_plot": "sum only if 24 nonmissing hourly values; accumulation semantics unconfirmed",
+            "diagnostic_rain_plot": "raw individual records only; no accumulated rainfall features",
+            "final_prediction_labels": "deferred",
+            "final_rainfall_features": "deferred",
         },
         "hourly_files": hourly["files"],
         "qc_codes_observed": hourly["qc_codes"],

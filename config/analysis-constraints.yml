@@ -1,0 +1,66 @@
+schema_version: 1
+review_date: '2026-10-27'
+raw_inputs:
+  modification_allowed: false
+  new_imputation_allowed: false
+hourly_observations:
+  timezone: Asia/Shanghai
+  utc_offset: '+08:00'
+  timezone_evidence: TPDC attachment 1 description, Chinese and English
+  timestamp_interval_position: null
+  data_publication_latency: null
+  official_missing_value: 9999.9
+  qc_definitions:
+    0: 正确
+    1: 可疑
+    2: 错误
+    4: 插补数据
+    8: 数据缺失
+    9: 未进行质量控制
+  automatic_qc_filtering: false
+  flux_qc_mapping: null
+  station_longitude_as_described: 85.29
+  station_latitude_resolved: null
+  station_latitude_chinese: 28.86
+  station_latitude_english: 28.26
+  station_elevation_m_as_described: 4140
+  declared_distance_to_affected_port_km: 65
+  permitted_interpretation: regional atmospheric background, not local disaster precipitation
+precipitation:
+  raw_field: Precip(mm)
+  unit_as_header: mm
+  accumulation_interval: null
+  counter_reset_rule: null
+  increment_or_counter: null
+  final_rolling_features: deferred
+daily_temperature:
+  unit: degree_Celsius
+  unit_evidence: TPDC attachment 2 instructions
+  day_timezone: null
+  county_aggregation_method: null
+glacier_elevation_change:
+  upstream_rate_unit: meter_per_year
+  upstream_uncertainty_sigma: 1
+  upstream_evidence: Hugonnet dataset DOI 10.6096/13, SEDOO resourceAbstract.en
+  local_unit_and_error_processing_inheritance: unverified
+  final_uncertainty_propagation: deferred
+case_reference:
+  literal_datetime_from_problem: '2026-08-26 10:30'
+  problem_page: 1
+  timezone: null
+  event_phase: null
+  hazard_onset_time: null
+  debris_flow_trigger_time: null
+  arrival_time_at_port: null
+  report_time: null
+prediction:
+  final_time_labels: deferred
+  automatic_stage_time_equivalence: false
+  final_95_percent_coverage_claim: deferred
+allowed_work:
+  - source and metadata inventory
+  - native missing and official missing-code counts
+  - QC counts with official definitions, preserving all source records
+  - numeric ranges and geometric validity
+  - raw precipitation record plots without cumulative-feature definitions
+  - descriptive observation plots on their own declared timezone

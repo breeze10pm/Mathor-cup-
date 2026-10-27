@@ -98,9 +98,9 @@ def main() -> None:
         (latest.last_diagnostic_nonmissing_timestamp == "2026-08-27 08:00:00").all()
         and (latest.post_audit_date_available_cells == 0).all()
     )
-    window = pd.read_csv(TAB / "pre_event_availability.csv")
+    window = pd.read_csv(TAB / "calendar_window_availability.csv")
     window = window.loc[window.hours == 72]
-    checks["pre_event_72h_numeric_coverage"] = len(window) == 63 and bool(
+    checks["calendar_window_72h_numeric_coverage"] = len(window) == 63 and bool(
         (window.diagnostic_nonmissing == 72).all()
     )
     daily = pd.read_csv(TAB / "daily_temperature_files.csv")
@@ -156,7 +156,8 @@ def main() -> None:
         "checks": checks,
         "scope": "Execution, count conservation, source hashes, and selected independent spatial recomputations; not final scientific validity or QC approval",
         "source_data_findings_retained": {
-            "qc_code_meanings_unknown": True,
+            "qc_code_definitions_confirmed_in_official_metadata": True,
+            "case_phase_and_timezone_unconfirmed": True,
             "event_time_labels_not_supplied_in_historical_inventory": True,
             "netcdf_speed_component_max_difference_m_per_year": spatial_checks[
                 "netcdf_velocity_hypotenuse_max_abs_error"

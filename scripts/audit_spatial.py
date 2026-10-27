@@ -625,12 +625,12 @@ def main():
     time_notes = dict(
         historical_interpretation_date=dict(
             field="解译Time",
-            meaning="image interpretation date, not event occurrence",
+            meaning="stored date field named 解译Time; business meaning unconfirmed; not an event label",
             counts=hist["解译Time"].astype(str).value_counts().to_dict(),
         ),
         historical_image_date=dict(
             field="影像Time",
-            meaning="image acquisition/reference date, not event occurrence",
+            meaning="stored date field named 影像Time; acquisition/reference interpretation unconfirmed",
             counts=hist["影像Time"].astype(str).value_counts().to_dict(),
         ),
         event_date_available=False,
@@ -638,9 +638,9 @@ def main():
         glacier_dhdt_periods=periods[["period_start", "period_end"]]
         .drop_duplicates()
         .to_dict("records"),
-        dem_date="2026-08-26 appears in archive title; the TIFF metadata does not establish pre-event acquisition timing",
-        population="County-level Seventh National Population Census; total population and household population are different reported fields; local population distribution is absent",
-        rgi_dates="RGI inventory source/begin/end dates describe source imagery/inventory, not disaster occurrence",
+        dem_date="XML records Clip processing at 20260826 171843 with no timezone; not an acquisition timestamp or proof of pre-event terrain",
+        population="County-level census fields 合计 and 人口数 have different values; exact definitions and reason for difference unconfirmed; local distribution absent",
+        rgi_dates="RGI date-like fields are stored values; source/date semantics and sentinel definitions require upstream dictionaries; not event labels",
     )
     savejson("time_semantics.json", time_notes)
     # Figure 1: context and local source coverage, with legends kept outside the data.
@@ -890,6 +890,8 @@ def report(path, s, hist, pop, lcdf, vectors, periods):
 
 范围：官方原始附件，仅EDA、字段语义、覆盖与质量核验，无建模或训练。审计脚本为 `scripts/audit_spatial.py`，固定依赖由项目 `mc-base` 环境提供。重跑：
 
+已按[内嵌元数据复核](spatial-metadata-evidence.md)收紧日期和人口口径用语；官网补充与未决问题见[待确认事项清单](pending-questions.md)。
+
 ```powershell
 & 'D:\\miniforge3\\Scripts\\conda.exe' run -n mc-base --no-capture-output python scripts/audit_spatial.py
 ```
@@ -911,7 +913,7 @@ def report(path, s, hist, pop, lcdf, vectors, periods):
 
 类型分布：{hist["类型"].value_counts().to_dict()}。flag分布：{hist["flag"].value_counts().to_dict()}，全部为1，因此仅凭该字段无法构造正负样本；“flag=1”的业务定义未附说明。规模、频率、河流、是否有扇及全部日期分布见 `historical_distributions.csv`。
 
-`解译Time`为{hist["解译Time"].min()}—{hist["解译Time"].max()}，84条全部同日，语义为解译时间。`影像Time`为{hist["影像Time"].min()}—{hist["影像Time"].max()}，语义为影像时间。二者都**不能当作灾害发生日期**。未发现明确事件发生时间字段。`Resolution`为影像解译数据属性，不能等同于DEM或气候变量分辨率。`Area`等字段缺少统一单位字典，本审计保留原值，不臆定单位。
+`解译Time`存储值为{hist["解译Time"].min()}—{hist["解译Time"].max()}，84条全部同日；`影像Time`为{hist["影像Time"].min()}—{hist["影像Time"].max()}。XML只有字段名/类型而无业务定义，并有CalculateField赋日期日志，不能直接称为实际解译/影像采集时间，更**不能当作灾害发生日期**。`Resolution`非空值实际为河流名，不按名称补数值分辨率。`Area`等字段缺少单位字典，保留原值。
 
 属性x/y坐标位于其自身多边形内部或边界上的记录为{c["xy_inside_own_polygon"]}/84；属性点、面质心与沟口等概念不可自动混用。覆盖计算先将历史面及属性点从EPSG:4490转换到DEM的EPSG:4326，再做面与DEM矩形相交/包含和有效像元中心计数。面与DEM关系和属性点采样分别输出于 `historical_dem_coverage.csv`。几何有效不代表灾害清单完整，也不证明各多边形在2026年均发生事件。
 
@@ -935,11 +937,11 @@ def report(path, s, hist, pop, lcdf, vectors, periods):
 
 {mdtable(pd.DataFrame([dict(source=v["source"], records=v["records"], CRS=v["crs"], invalid=v["invalid"]) for v in vectors if v["source"].startswith("attachment_3")]))}
 
-dhdt为高程变化**率**，dhdt_err为误差，不能混作高程/冰厚或短期速度。UTM和GCS对应重复表达，不是两组独立样本。逐TIFF原始CRS、范围、分辨率、nodata、精确有效/缺失计数及数值范围见 `glacier_raster_inventory.csv`；分期和产品汇总见 `glacier_period_summary.csv`。RGI6 `BgnDate`/`EndDate`与RGI7 `src_date`为源影像/清单日期，含哨兵或缺失须按源产品定义处理，不是事件日期；完整日期分布见 `glacier_inventory_date_counts.csv`。RGI6有1个无效几何，原因与ID见 `invalid_geometry_details.csv`，本审计保留原始几何未自动修复。RGI6/7数量不同反映清单版本、边界与拆分等差异，本审计不能将差异直接解释为冰川新增/消失。
+dhdt为高程变化**率**，dhdt_err为误差，不能混作高程/冰厚或短期速度。上游作者目录已确认m/年与1σ，但本地派生栅格的单位/误差处理继承关系仍待核实，见[官方与上游复核](metadata-review.md)。UTM和GCS对应重复表达，不是两组独立样本。逐TIFF原始CRS、范围、分辨率、nodata、精确有效/缺失计数及数值范围见 `glacier_raster_inventory.csv`；分期和产品汇总见 `glacier_period_summary.csv`。RGI6 `BgnDate`/`EndDate`与RGI7 `src_date`仅记录实际存储值，业务含义及特殊日期/缺失编码待上游字典确认，不作事件日期；完整日期分布见 `glacier_inventory_date_counts.csv`。RGI6有1个无效几何，原因与ID见 `invalid_geometry_details.csv`，本审计保留原始几何未自动修复。RGI6/7数量不同不能直接解释为冰川新增/消失；版本、边界或拆分等影响需要另行核对。
 
 ## 附件5土地覆盖
 
-2020—2023年每年3957×6336，EPSG:4326、uint8、nodata=0。四年CRS与网格需保持一致；像元大小以度表达，面积统计使用椭球面积。原始类别数值保持不变：附件内未发现类码释义，不从外部产品或常见编码猜测语义。
+2020—2023年每年3957×6336，EPSG:4326、uint8、nodata=0。四年CRS与网格需保持一致；像元大小以度表达，面积统计使用椭球面积。原始类别数值保持不变：附件内未发现类码释义；沿官网来源已找到上游作者字典，本地是否保持编码仍待核实，见[官方与上游复核](metadata-review.md)。
 
 {mdtable(pd.DataFrame(s["landcover"])[["year", "valid_pixels", "missing_pixels", "missing_fraction", "valid_area_km2", "missing_area_km2"]])}
 
@@ -955,7 +957,7 @@ nodata可能来自县界裁切或产品掩膜，不能仅凭全矩形缺失率�
 
 ## 附件8人口：只支持县级口径
 
-仅1个县级Polygon，{pop.crs}，几何无效={s["population"]["invalid"]}。`合计`={p["合计"]}，`男`+`女`={p["男"]}+{p["女"]}={p["男"] + p["女"]}，`城镇人`+`乡村人`={p["城镇人"]}+{p["乡村人"]}={p["城镇人"] + p["乡村人"]}。另有`人口数`={p["人口数"]}、`户数`={p["户数"]}、`户规模`={p["户规模"]}；人口数/户数={p["人口数"] / p["户数"]:.4f}，与户规模近似一致，提示不同人口统计口径，但附件未附字段字典，不能将其差{p["合计"] - p["人口数"]}认作漏报或异常值。
+仅1个县级Polygon，{pop.crs}，几何无效={s["population"]["invalid"]}。`合计`={p["合计"]}，`男`+`女`={p["男"]}+{p["女"]}={p["男"] + p["女"]}，`城镇人`+`乡村人`={p["城镇人"]}+{p["乡村人"]}={p["城镇人"] + p["乡村人"]}。另有`人口数`={p["人口数"]}、`户数`={p["户数"]}、`户规模`={p["户规模"]}。人口数/户数={p["人口数"] / p["户数"]:.4f}只是算术关系，不能据此命名为户籍/家庭户人口。逐字段口径与差值{p["合计"] - p["人口数"]}的原因未明，不认作漏报或异常。
 
 本附件没有村镇点位、建筑人口、人口栅格或县内分布，**不可直接外推局地栅格人口/源区暴露人口**。面积均摊是额外假设而不是观测，本审计不做此操作。
 
@@ -965,7 +967,7 @@ nodata可能来自县界裁切或产品掩膜，不能仅凭全矩形缺失率�
 
 运行验证记录 `validation_checks.json`：像元有效+缺失计数守恒、每年类别频数总和、四年网格对齐、历史类型总数、速度v与hypot(vx,vy)差值、冰厚有效掩膜与glacier_mask一致性。程序对计数守恒与网格对齐设置断言；速度模长差异作为源数据质量发现保留，不当作程序失败。
 
-后续可做覆盖范围内的解释性分层与机制假设；在获得明确事件发生时间、负样本构造依据和附加时空观测前，当前附件不支持宣称已建立可验证的逐日事件预报标签。DEM压缩包标题的2026-08-26不能自动证明它是灾前地形；DEM XML创建/同步/修改日期均20260826、时间17184300（见`dem_metadata_dates.json`），此类元数据处理时间也不等于观测获取时间；需补充获取与制作时序，避免时间泄漏。
+后续可做覆盖范围内的解释性分层与机制假设；在获得明确事件发生时间、负样本构造依据和附加时空观测前，当前附件不支持宣称已建立可验证的逐日事件预报标签。DEM压缩包标题的2026-08-26不能自动证明它是灾前地形；XML的lineage/Process明确记录20260826、171843的Clip操作（见逐项证据与`dem_metadata_dates.json`）。处理日志和创建/同步日期均不等于观测获取时间；需补充获取与制作时序，避免时间泄漏。
 """
     path.write_text(text, encoding="utf-8")
 
