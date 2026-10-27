@@ -1,0 +1,34 @@
+{
+  "git.path": "C:\\Users\\h1883\\AppData\\Local\\Programs\\Git\\cmd\\git.exe",
+  "python.defaultInterpreterPath": "D:\\miniforge3\\envs\\mc-base\\python.exe",
+  "python.condaPath": "D:\\miniforge3\\Scripts\\conda.exe",
+  "python.terminal.activateEnvironment": true,
+  "files.encoding": "utf8",
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk-xelatex",
+      "command": "D:\\texlive\\2026\\bin\\windows\\latexmk.exe",
+      "args": [
+        "-xelatex",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-halt-on-error",
+        "-file-line-error",
+        "-outdir=%OUTDIR%",
+        "%DOC%"
+      ],
+      "env": {
+        "LC_ALL": "C",
+        "LANG": "C"
+      }
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "XeLaTeX + bibliography (latexmk)",
+      "tools": ["latexmk-xelatex"]
+    }
+  ],
+  "latex-workshop.latex.outDir": "%DIR%/build",
+  "latex-workshop.view.pdf.viewer": "tab"
+}

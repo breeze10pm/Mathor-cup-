@@ -1,0 +1,12 @@
+# Machine-specific environments and temporary files.
+.venv/
+.conda/
+tmp/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+**/build/
+
+# Raw competition datasets and generated files can be large.
+data/
+output/

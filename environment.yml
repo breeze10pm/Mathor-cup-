@@ -1,0 +1,34 @@
+name: mc-base
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  # General data analysis, statistics, and reproducible baseline models.
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - statsmodels
+  - matplotlib-base
+  - seaborn
+  - openpyxl
+  - pyarrow
+  - pyyaml
+  - requests
+  - tqdm
+  - jupyterlab
+  - ipykernel
+  # Meteorological and multidimensional data, including chunked computation.
+  - xarray
+  - netcdf4
+  - h5netcdf
+  - dask
+  - bottleneck
+  # Vector/raster GIS, coordinate transformations, and map plotting.
+  - geopandas
+  - rasterio
+  - rioxarray
+  - pyproj
+  - shapely
+  - cartopy
