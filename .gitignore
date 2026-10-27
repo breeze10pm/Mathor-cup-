@@ -6,7 +6,36 @@ __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
 **/build/
+.ruff_cache/
+
+# Local credentials and signing material.
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
 
 # Raw competition datasets and generated files can be large.
 data/
 output/
+
+# Guard against large geospatial inputs and model weights outside those folders.
+*.tif
+*.tiff
+*.nc
+*.gpkg
+*.shp
+*.shx
+*.dbf
+*.zip
+*.rar
+*.7z
+*.parquet
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+*.qgz~
+*.qgs~
