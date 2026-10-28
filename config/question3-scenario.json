@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "timezone": "Asia/Shanghai",
+  "event_date_source": "contest problem date; stage times are user-reported and not independently verified",
+  "ice_collapse_onset": "2026-08-26T10:52:00+08:00",
+  "arrival_at_port": "2026-08-26T10:59:00+08:00",
+  "contest_literal_time": "2026-08-26 10:30",
+  "contest_literal_time_interpretation": "Exact event stage and timezone unresolved; retained separately from user-reported ice-collapse onset and port arrival.",
+  "trigger_constraint_start": "2026-08-26T10:52:00+08:00",
+  "trigger_constraint_end": "2026-08-26T10:59:00+08:00",
+  "trigger_constraint_assumption": "Same event chain; debris-flow trigger no earlier than reported ice-collapse onset and no later than reported port arrival.",
+  "forecast_initialization_utc": "2026-08-25T00:00:00+00:00",
+  "forecast_initialization_source": "GFS initial time in downloaded product and WRF d01 START_DATE; product publication/availability time unknown",
+  "reported_runout_distance_km": 22.0,
+  "reported_runout_distance_status": "user-reported approximate distance, not GIS-measured",
+  "statistical_95_percent_ci": null,
+  "empirical_interval_coverage_rate": null,
+  "operational_warning_issue_time": null
+}

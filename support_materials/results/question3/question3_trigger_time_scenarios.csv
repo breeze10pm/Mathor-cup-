@@ -1,0 +1,5 @@
+interval_type,lower,upper,assumption
+hard_conditional_bound,2026-08-26T10:52:00+08:00,2026-08-26T10:59:00+08:00,same-chain assumption only; not probabilistic
+illustrative_uniform_90pct,2026-08-26T10:52:21+08:00,2026-08-26T10:58:39+08:00,uniform prior scenario; not calibrated
+illustrative_uniform_95pct,2026-08-26T10:52:10.500000+08:00,2026-08-26T10:58:49.500000+08:00,uniform prior scenario; not a statistical confidence interval
+illustrative_uniform_99pct,2026-08-26T10:52:02.100000+08:00,2026-08-26T10:58:57.900000+08:00,uniform prior scenario; not calibrated

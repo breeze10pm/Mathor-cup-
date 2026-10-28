@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "retrieved_at": "2026-10-28",
+  "policy": "Raw or licensed geospatial files remain under ignored data/ and are never committed. Checksums are for local integrity, not proof of authorship.",
+  "sources": [
+    {
+      "id": "geopera_centerline_v2",
+      "url": "https://github.com/geo-pera/bhotekoshi-2026-reconstruction/blob/main/sim/inputs/centerline_v2.csv",
+      "raw_url": "https://raw.githubusercontent.com/geo-pera/bhotekoshi-2026-reconstruction/main/sim/inputs/centerline_v2.csv",
+      "local_path": "data/supplementary/geo-pera-v1.1/centerline_v2.csv",
+      "sha256": "e4001d4d0f46a1e8613b9a3cbcf41871199e4c11dd0efd725cec010d494a5a3b",
+      "bytes": 103609,
+      "license": "No separate dataset license identified for this CSV; the repository MIT license covers code. Keep attribution and do not redistribute the CSV without confirming its data terms.",
+      "usage": "Georeferenced channel centerline and chainage; not an observed debris-flow trajectory."
+    },
+    {
+      "id": "geopera_v11_rasuwagadhi_timure",
+      "release_url": "https://github.com/geo-pera/bhotekoshi-2026-reconstruction/releases/tag/v1.1",
+      "api_url": "https://api.github.com/repos/geo-pera/bhotekoshi-2026-reconstruction/releases/tags/v1.1",
+      "release": "v1.1",
+      "license": "CC BY-NC 4.0; attribute derived from WorldView-3 © Vantor, open data, and geo-pera/bhotekoshi-2026-reconstruction.",
+      "vertical_datum": "EGM2008",
+      "local_directory": "data/supplementary/geo-pera-v1.1/",
+      "files": [
+        {
+          "name": "bhotekoshi_dh_rasuwagadhi-timure_2m.tif",
+          "sha256": "ab2961f1b127acf2c006bfbc9c416015ee6bd3c286c1cb95efb21ddcd1bdaf9a",
+          "bytes": 8208198,
+          "role": "Bias-corrected, artifact-masked, measured-only elevation change versus pre-event terrain."
+        },
+        {
+          "name": "bhotekoshi_dh-uncertainty_rasuwagadhi-timure_2m.tif",
+          "sha256": "75e1d27cfbe3daf4c68f935d3c1ac4943801741a4932c047c7e402ce442adad5",
+          "bytes": 7773518,
+          "role": "Per-pixel 1-sigma uncertainty for the elevation-change raster."
+        },
+        {
+          "name": "bhotekoshi_dsm_rasuwagadhi-timure_0p5m_measured.tif",
+          "sha256": "6cda4f10f0d6d32090d1fc6416717925e4c8588385ed94315cb69695656ca1ec",
+          "bytes": 115534854,
+          "role": "Measured-only 0.5 m post-event DSM; cloud gaps remain nodata."
+        },
+        {
+          "name": "bhotekoshi_sediment-budget_per-km.csv",
+          "sha256": "2714889dd8ab81945a2e14b312ebeb1ae1929e6e2aae88cfa598cf8b266db62b",
+          "bytes": 1533,
+          "role": "Published floor-masked erosion/deposition budget in 500 m corridor segments."
+        },
+        {
+          "name": "SHA256SUMS.txt",
+          "sha256": "3941c639bde2d3d9bff1674372ece922fcfde5b8bed29cf5c12c0400fdf1ce7b",
+          "bytes": 1540,
+          "role": "Publisher checksum manifest."
+        }
+      ],
+      "not_used_for_port_extent": [
+        "bhotekoshi_deposition-polygons.geojson",
+        "bhotekoshi_erosion-polygons.geojson"
+      ],
+      "limitations": [
+        "Use v1.1 only; related v1.0 ortho-parallax change products were retracted.",
+        "The deposition/erosion polygon files in this release are downstream Syabrubesi features and do not cover the port-core reach.",
+        "The reach-A registered product reports about 3.2 m stable-ground median alignment error, a corrected +1.75 m flat-ground bias, and cloud-limited coverage.",
+        "Do not directly subtract these EGM2008 products from the local ellipsoidal-height DEMs."
+      ]
+    }
+  ]
+}

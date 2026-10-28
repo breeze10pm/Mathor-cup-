@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "model_name": "normalized one-dimensional kinematic runout scenario",
+  "model_status": "conceptual sensitivity simulation; not a terrain-resolved debris-flow dynamics model",
+  "timezone": "Asia/Shanghai",
+  "start_time": "2026-08-26T10:52:00+08:00",
+  "arrival_anchor_time": "2026-08-26T10:59:00+08:00",
+  "reported_distance_km": 22.0,
+  "reported_distance_source": "user-reported event description; independently cross-checked against centerline projections but not treated as exact",
+  "centerline_source": "data/supplementary/geo-pera-v1.1/centerline_v2.csv",
+  "centerline_crs": "EPSG:32645",
+  "v11_change_raster": "data/supplementary/geo-pera-v1.1/bhotekoshi_dh_rasuwagadhi-timure_2m.tif",
+  "v11_uncertainty_raster": "data/supplementary/geo-pera-v1.1/bhotekoshi_dh-uncertainty_rasuwagadhi-timure_2m.tif",
+  "v11_change_vertical_datum": "EGM2008",
+  "source_elevation_m": 5200,
+  "intermediate_elevation_m": 4000,
+  "port_elevation_m": 1800,
+  "scenario_speed_factors": {
+    "slow_sensitivity": 0.85,
+    "event_anchored_baseline": 1.0,
+    "fast_sensitivity": 1.15
+  },
+  "time_step_seconds": 5,
+  "simulation_horizon_seconds": 600,
+  "omitted_or_unknown": [
+    "measured flow velocity and its uncertainty",
+    "trigger time within the 7-minute chain interval",
+    "flow depth, width, discharge and volume",
+    "entrainment and deposition rates",
+    "bed roughness and rheology",
+    "georeferenced arrival boundary"
+  ],
+  "sensitivity_factors_are_confidence_limits": false
+}

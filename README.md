@@ -1,6 +1,6 @@
 # MathorCup赛道B项目
 
-完成情况统一查看[项目进度](PROGRESS.md)。第一问首版入口为[案例对照报告](docs/question1-v1.md)，单独复算执行`python scripts/complete_question1.py`，无需重跑审计。第二问QGIS首批图层见[第二问首版记录](docs/question2-v0.md)，复算执行`python scripts/prepare_question2_layers.py`。灾害标签、沉积厚度及模型验证仍受来源和配准资料限制；科学边界见[分析约束](config/analysis-constraints.yml)及[待确认清单](docs/pending-questions.md)。
+完成情况统一查看[项目进度](PROGRESS.md)。第一问首版入口为[案例对照报告](docs/question1-v1.md)，第二问空间条件筛查见[第二问记录](docs/question2-v0.md)，第三问和第四问首版见[时间预警](docs/question3-v0.md)和[中心线传播情景](docs/question4-v0.md)。新增坐标、DEM、卫星范围、中心线、v1.1高程变化的元数据/限制见[新增空间资料核验](docs/new-evidence-review.md)。不确定的时间、触发标签、沉积厚度、统计95%覆盖率和模型验证均不伪装为已知结果。
 
 ## 在其他电脑复现
 
@@ -24,9 +24,11 @@ conda create -n mc-base --file environment.win-64.lock.txt
 
 激活环境后运行Python，或使用`conda run -n mc-base --no-capture-output python ...`，以正确加载GDAL、PROJ及数值库。其他系统用`environment.yml`重新求解；Windows显式锁定文件不能当作其他系统的锁定文件。
 
-### 2 放入同版本官方输入
+### 2 放入同版本官方输入与可选外部资料
 
 将8个原始ZIP/RAR原样放在`data/附件/`，不改名、不覆盖内容。具体文件名、大小及SHA-256见[输入版本清单](config/input-manifest.json)。原始数据不随Git分发，需要从官方来源取得或由项目持有者另行提供。
+
+中心线与geo-pera v1.1口岸段产品是可选外部输入，放入`data/supplementary/geo-pera-v1.1/`；2019灾前DEM、灾后2 m composite、UNESCO SHP与UNOSAT GDB也需按[新增空间资料核验](docs/new-evidence-review.md)所列相对路径准备。影像衍生数据受CC BY-NC 4.0许可且体积较大，GitHub只保存复现程序、元数据和说明，不推送数据本体。只使用v1.1修正版，v1.0旧高程变化产品已撤回。
 
 ```text
 项目根目录/
@@ -85,7 +87,15 @@ python scripts/fetch_official_metadata.py --refresh
 
 ## 结果位置
 
-新增26项专题数据的取舍、四问首版交付与10月30日20:00截止安排，见[补充数据与支撑材料安排](docs/data-request-and-delivery.md)。当前管线仍只使用已收到并核验的原8包，尚未生成第二至四问模型或最终提交包。
+新增26项专题数据的取舍、四问首版交付与10月30日20:00截止安排，见[补充数据与支撑材料安排](docs/data-request-and-delivery.md)。新空间资料与Q3/Q4复算顺序如下：
+
+```console
+python scripts/prepare_event_context.py
+python scripts/build_question3_baseline.py
+python scripts/build_question4_kinematic.py
+```
+
+脚本需要对应数据先按说明放入`data/`。生成物在`output/event_context/`、`output/question3/`和`output/question4/`；重要结论和解释已记录于`docs/`。
 
 | 内容 | 位置 |
 | --- | --- |
@@ -94,9 +104,10 @@ python scripts/fetch_official_metadata.py --refresh
 | 非降水变量关系 | `output/variable_relations/` |
 | 同刻多高度与梯度 | `output/vertical_profiles/` |
 | 各步骤日志和运行清单 | `output/reproduction/` |
+| 四问报告与新增空间资料核验 | `docs/question1-v1.md`至`docs/question4-v0.md`；`docs/new-evidence-review.md` |
 | 可阅读的阶段报告 | `docs/` |
 
-所有统计视图另存，原始包只读；QC=4是提供方插补，本项目不新增插补。日内图按已确认的北京时间小时标签描述，未确认的站点坐标或降水定义不被当作事实。
+所有统计视图另存，原始包只读；QC=4是提供方插补，本项目不新增插补。日内图按已确认的北京时间小时标签描述。赛题原文10:30与用户报告10:52/10:59按阶段未明的冲突分别保存；均匀先验时间区间、速度敏感性只是透明情景，不是实测或统计校准结果。
 
 ## 已做的迁移验证
 

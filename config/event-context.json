@@ -9,7 +9,22 @@
   "arrival_at_port": "2026-08-26T10:59:00+08:00",
   "process_description_user_reported": "尼泊尔境内蓝塘里壤峰北坡一条冰川在海拔约5200米处断裂发生冰岩崩，高位快速坠落至约4000米，冲刷山体形成泥石流，沿普热普藏布和东林藏布约22公里到达海拔约1800米的吉隆口岸。",
   "process_description_status": "user_reported_original_text_not_independently_verified",
-  "source_coordinates": null,
+  "source_coordinates": {
+    "candidate_A": {
+      "longitude": 85.525155,
+      "latitude": 28.285317,
+      "elevation_m": null,
+      "source": "user-provided glacier-researcher interpretation from post-event imagery",
+      "status": "reference point; not a surveyed source polygon"
+    },
+    "candidate_B": {
+      "longitude": 85.528159,
+      "latitude": 28.288708,
+      "elevation_m": null,
+      "source": "user-provided HiRISK rapid assessment",
+      "status": "reference point; not a surveyed source polygon"
+    }
+  },
   "full_runout_polygon": null,
   "official_impact_core_point": {
     "longitude": 85.3766,

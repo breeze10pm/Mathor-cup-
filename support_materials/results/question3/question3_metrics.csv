@@ -1,0 +1,8 @@
+metric,value,interpretation
+onset_to_arrival_elapsed_min,7.0,reported chronology; not debris-flow-only travel time
+initialization_to_onset_h,26.866666666666667,hindcast initialization lag; not operational lead
+initialization_to_arrival_h,26.983333333333334,hindcast initialization lag; not operational lead
+conditional_perfect_detection_lead_min,7.0,hypothetical immediate onset detection only
+reported_runout_distance_km,22.0,approximate user-reported distance
+centerline_route_distance_A_km,22.15565201210584,nearest centerline projections; not a measured flow path
+centerline_route_distance_B_km,21.99265201210584,nearest centerline projections; not a measured flow path
