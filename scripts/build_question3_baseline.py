@@ -32,16 +32,21 @@ def main() -> None:
         raise FileNotFoundError("Run scripts/prepare_event_context.py before the Question 3 baseline")
     event = json.loads(EVENT_CONTEXT.read_text(encoding="utf-8"))
     onset = dt(cfg["ice_collapse_onset"])
+    transition_start = dt(cfg["debris_to_mudflow_transition_start"])
+    transition_end = dt(cfg["debris_to_mudflow_transition_end"])
+    transition_reference = dt(cfg["transition_representative_time"])
     arrival = dt(cfg["arrival_at_port"])
     trigger_start = dt(cfg["trigger_constraint_start"])
     trigger_end = dt(cfg["trigger_constraint_end"])
     init = dt(cfg["forecast_initialization_utc"])
 
     elapsed_s = (arrival - onset).total_seconds()
-    if elapsed_s <= 0 or trigger_end < trigger_start:
+    if elapsed_s <= 0 or trigger_end < trigger_start or transition_end < transition_start:
         raise ValueError("Event chronology is not ordered")
     init_to_onset_h = (onset.astimezone(init.tzinfo) - init).total_seconds() / 3600
+    init_to_transition_h = (transition_reference.astimezone(init.tzinfo) - init).total_seconds() / 3600
     init_to_arrival_h = (arrival.astimezone(init.tzinfo) - init).total_seconds() / 3600
+    transition_to_arrival_min = (arrival - transition_reference).total_seconds() / 60
     routes = event["route_candidates"]
     distance_values = [float(route["centerline_distance_km"]) for route in routes]
     distance_range = [min(distance_values), max(distance_values)]
@@ -55,22 +60,22 @@ def main() -> None:
             "arrival_if_detected_at_onset": pd.Timestamp(onset + pd.Timedelta(seconds=duration_s)).isoformat(),
         }
 
-    # This interval is a transparent uniform scenario within the user's hard
-    # temporal constraint, not a data-calibrated confidence interval.
-    trigger_span_s = (trigger_end - trigger_start).total_seconds()
-    tail_s = trigger_span_s * 0.025
-    uniform_95 = [trigger_start + pd.Timedelta(seconds=tail_s), trigger_end - pd.Timedelta(seconds=tail_s)]
     summary = {
         "question": 3,
         "method": "retrospective event-time constraint plus forecast-initialization lag; not a trained probabilistic forecast",
         "ice_collapse_onset": onset.isoformat(),
         "arrival_at_port": arrival.isoformat(),
         "reported_onset_to_arrival_minutes": elapsed_s / 60,
+        "reported_debris_to_mudflow_transition_interval": [transition_start.isoformat(), transition_end.isoformat()],
+        "representative_transition_time_for_scenario": transition_reference.isoformat(),
+        "transition_time_to_arrival_minutes_at_representative_time": transition_to_arrival_min,
+        "transition_time_interpretation": "User-reported process-phase interval. It narrows the transition phase but does not establish the exact physical trigger time.",
         "conditional_trigger_interval": [trigger_start.isoformat(), trigger_end.isoformat()],
         "interval_basis": cfg["trigger_constraint_assumption"],
+        "exact_debris_flow_trigger_time": "unknown; transition phase is not assumed identical to trigger",
         "statistical_95_percent_confidence_interval": "not estimable from available observations: one event and no calibrated event-time error distribution",
-        "illustrative_95_percent_scenario_interval": [x.isoformat() for x in uniform_95],
-        "illustrative_95_percent_scenario_assumption": "uniform trigger-time distribution over the conditional 10:52–10:59 bound; this is a prior scenario, not a statistical confidence interval",
+        "illustrative_uniform_prior_interval": None,
+        "illustrative_uniform_prior_status": "removed; no probability distribution over transition timing is supported by the newly supplied event-phase interval",
         "empirical_interval_coverage_rate": "not estimable: no independent labeled event sample",
         "forecast_initialization_utc": init.isoformat(),
         "initialization_to_onset_hours": init_to_onset_h,
@@ -96,8 +101,10 @@ def main() -> None:
 
     rows = [
         ("reported_ice_collapse_onset", onset.isoformat(), "user-reported; minute precision"),
-        ("conditional_trigger_earliest", trigger_start.isoformat(), "conditional lower bound; not a point label"),
-        ("conditional_trigger_latest", trigger_end.isoformat(), "conditional upper bound; not a point label"),
+        ("reported_transition_start", transition_start.isoformat(), "user-reported transition phase start; source record not yet supplied"),
+        ("representative_transition_time", transition_reference.isoformat(), "user-selected exact-time scenario anchor; not independently verified trigger time"),
+        ("reported_transition_end", transition_end.isoformat(), "user-reported transition phase end; source record not yet supplied"),
+        ("debris_flow_trigger_exact", "unknown", "transition phase and trigger time are not presumed identical"),
         ("reported_port_arrival", arrival.isoformat(), "user-reported; minute precision"),
         ("contest_literal_time", cfg.get("contest_literal_time", "2026-08-26T10:30:00"), "contest text; event stage and timezone unresolved; conflict retained"),
         ("forecast_initialization", init.isoformat(), "UTC model initialization; release time unknown"),
@@ -107,17 +114,21 @@ def main() -> None:
     )
     pd.DataFrame(
         [
-            ("hard_conditional_bound", trigger_start.isoformat(), trigger_end.isoformat(), "same-chain assumption only; not probabilistic"),
-            ("illustrative_uniform_90pct", (trigger_start + pd.Timedelta(seconds=trigger_span_s * 0.05)).isoformat(), (trigger_end - pd.Timedelta(seconds=trigger_span_s * 0.05)).isoformat(), "uniform prior scenario; not calibrated"),
-            ("illustrative_uniform_95pct", uniform_95[0].isoformat(), uniform_95[1].isoformat(), "uniform prior scenario; not a statistical confidence interval"),
-            ("illustrative_uniform_99pct", (trigger_start + pd.Timedelta(seconds=trigger_span_s * 0.005)).isoformat(), (trigger_end - pd.Timedelta(seconds=trigger_span_s * 0.005)).isoformat(), "uniform prior scenario; not calibrated"),
+            ("reported_transition_interval", transition_start.isoformat(), transition_end.isoformat(), "user-reported phase timing; not statistically calibrated"),
+            ("representative_exact_time_scenario", transition_reference.isoformat(), transition_reference.isoformat(), "user-selected representative point; not independently verified physical trigger"),
+            ("port_arrival_after_transition_start", transition_start.isoformat(), arrival.isoformat(), "conditional elapsed window 4m41s; transition start is not assumed to be full-route motion start"),
+            ("exact_trigger_time", "unknown", "unknown", "no direct trigger-time observation supplied"),
         ],
         columns=["interval_type", "lower", "upper", "assumption"],
     ).to_csv(OUT / "question3_trigger_time_scenarios.csv", index=False)
     pd.DataFrame(
         [
             ("onset_to_arrival_elapsed_min", elapsed_s / 60, "reported chronology; not debris-flow-only travel time"),
+            ("transition_start_to_arrival_min", (arrival - transition_start).total_seconds() / 60, "reported phase interval start to arrival; not a measured travel time"),
+            ("transition_end_to_arrival_min", (arrival - transition_end).total_seconds() / 60, "reported phase interval end to arrival; not a measured travel time"),
+            ("representative_transition_to_arrival_min", transition_to_arrival_min, "scenario elapsed time from representative transition point"),
             ("initialization_to_onset_h", init_to_onset_h, "hindcast initialization lag; not operational lead"),
+            ("initialization_to_representative_transition_h", init_to_transition_h, "hindcast initialization lag; not operational lead"),
             ("initialization_to_arrival_h", init_to_arrival_h, "hindcast initialization lag; not operational lead"),
             ("conditional_perfect_detection_lead_min", elapsed_s / 60, "hypothetical immediate onset detection only"),
             ("reported_runout_distance_km", cfg["reported_runout_distance_km"], "approximate user-reported distance"),

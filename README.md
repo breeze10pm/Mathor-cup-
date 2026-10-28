@@ -104,10 +104,10 @@ python scripts/build_question4_kinematic.py
 | 非降水变量关系 | `output/variable_relations/` |
 | 同刻多高度与梯度 | `output/vertical_profiles/` |
 | 各步骤日志和运行清单 | `output/reproduction/` |
-| 四问报告与新增空间资料核验 | `docs/question1-v1.md`至`docs/question4-v0.md`；`docs/new-evidence-review.md` |
+| 四问报告、来源核验与数据模拟/缺口清单 | `docs/question1-v1.md`至`docs/question4-v0.md`；`docs/new-evidence-review.md`；`docs/data-provenance-and-critical-gaps.md` |
 | 可阅读的阶段报告 | `docs/` |
 
-所有统计视图另存，原始包只读；QC=4是提供方插补，本项目不新增插补。日内图按已确认的北京时间小时标签描述。赛题原文10:30与用户报告10:52/10:59按阶段未明的冲突分别保存；均匀先验时间区间、速度敏感性只是透明情景，不是实测或统计校准结果。
+所有统计视图另存，原始包只读；QC=4是提供方插补，本项目不新增插补。日内图按已确认的北京时间小时标签描述。赛题原文10:30与用户报告的10:52冰崩、10:54:19–10:55:10转化时段、10:59到达分别保存；不把转化阶段自动等同于精确触发。第四问速度敏感性和转化位置只是透明情景，不是实测或统计校准结果。GFS/WRF/TPCSM均按数值模式输出解释，详见数据来源清单。
 
 ## 已做的迁移验证
 

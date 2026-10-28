@@ -4,9 +4,13 @@
 
 用公开沟道中心线把抽象的22 km里程轴换成地理坐标与沿程高程剖面。对源区A、B分别投影到中心线，并将TPDC口岸核心点投影到中心线：A路径22.156 km，B路径21.993 km。沿线中心高程约从4062/4022 m降到1801 m，平均落差约2221–2261 m、平均坡降约10.1–10.2%。这些是中心线属性，不是实际流面高程或现场测量误差。
 
-用户报告的冰崩起始10:52与口岸到达10:59作为同事件时间锚点。两条路线各自的事件锚定表观速度约52.36–52.75 m/s。以基准速度×0.85、×1.00、×1.15构造慢速、基准、快速情景；敏感性到达时间约6.09–8.24分钟。±15%是分析者选定的演示参数，不是观测误差或95%区间。基准复现10:59属于按同一事件构造校准，不是验证。
+用户报告的冰崩起始10:52与口岸到达10:59仍锚定整条灾害链平均路线速度，约52.36–52.75 m/s。新提供的碎屑流向泥石流转化关键时段为10:54:19–10:55:10，代表时刻按用户要求取10:54:19。脚本在时间—里程图标出该阶段，并计算恒定平均速度假设下的前锋位置情景。转化发生位置未知，因此这些里程只是模型演示，不能作为转化地点实测。±15%仍是分析者选定的演示参数，不是观测误差或95%区间；基准复现10:59属于构造校准，不是验证。
 
 前锋位置按时间步沿中心线插值，输出里程、坐标、高程和剩余距离。结果可在QGIS上叠加源区、口岸核心区、UNESCO/UNOSAT范围。此方案满足可复现的地理化过程展示，但仍是一维运动学情景，**不是二维浅水、Voellmy或泥石流流变数值模拟**。
+
+转化时间窗对应的沿线位置另存于`question4_transition_positions.csv`。位置由10:52开始时前锋恰在源区投影点、随后以全程平均速度匀速运动这一简化假设计算；由于转化的实际空间位置没有测量，不能用它反推真实转化点或局地流速。
+
+在这个假设下，10:54:19代表时刻的模拟里程为A约7.33 km、B约7.28 km；到10:55:10为A约10.02 km、B约9.95 km。它只说明“若从源区投影点以全程平均速度匀速前进，模型前锋会在哪里”，不能作为实地转化位置。
 
 ![中心线路径和到达敏感性](../output/question4/question4_georeferenced_scenarios.png)
 
@@ -40,6 +44,7 @@ python scripts/build_question4_kinematic.py
 - `output/question4/question4_arrival_sensitivity.csv`
 - `output/question4/question4_front_trajectories.csv`
 - `output/question4/question4_route_profile.csv`
+- `output/question4/question4_transition_positions.csv`
 - `output/question4/question4_local_sediment_budget.csv`
 - `output/question4/question4_georeferenced_scenarios.png`
 

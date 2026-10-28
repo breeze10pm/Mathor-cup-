@@ -14,6 +14,7 @@ MAPPINGS = {
     "output/question3/question3_trigger_time_scenarios.csv": "support_materials/results/question3/question3_trigger_time_scenarios.csv",
     "output/question4/question4_arrival_sensitivity.csv": "support_materials/results/question4/question4_arrival_sensitivity.csv",
     "output/question4/question4_local_sediment_budget.csv": "support_materials/results/question4/question4_local_sediment_budget.csv",
+    "output/question4/question4_transition_positions.csv": "support_materials/results/question4/question4_transition_positions.csv",
     "output/question4/question4_georeferenced_scenarios.png": "support_materials/results/question4/question4_georeferenced_scenarios.png",
 }
 

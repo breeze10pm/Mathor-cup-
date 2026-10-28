@@ -354,7 +354,7 @@ def figures(primary, top, case, bands, sensitivity, onset):
         ax.axvline(onset, color="black", ls=":", lw=0.8)
     axes[0].legend(loc="upper left", fontsize=8, ncol=3)
     axes[-1].set_xlabel(
-        "北京时间标签；虚线为用户报告冰崩起始10:52；曲线最晚09:00，小时支持区间仍未知"
+        "北京时间小时标签；虚线为冰崩起始10:52；10:54–10:55转化阶段无法由小时观测解析"
     )
     fig.suptitle("区域背景过程：塔站距口岸约65 km，曲线不等于源区局地观测")
     for suffix in ["png", "svg"]:
@@ -415,8 +415,8 @@ def make_report(top, all_scores, tails, flux, anchor, context, config, verificat
         "",
         "## 时间、影像与证据等级",
         "",
-        "- 用户报告：2026-08-26北京时间10:52冰崩起始、10:59到达口岸；分钟精度，序列化的00秒不是秒级实测。日期沿用赛题，原始来源尚未独立核验。",
-        "- 推断/条件约束：假定同一灾害链中触发不早于冰崩且不晚于到达，则触发时间属于[10:52,10:59]；不是精确标签，不赋均匀分布，不称95%置信区间。",
+        "- 用户报告：2026-08-26北京时间10:52冰崩起始、10:54:19–10:55:10碎屑流向泥石流转化关键时段、10:59到达口岸；原始调查记录尚未入库，时间误差未量化。",
+        "- 转化阶段时间窗可用于事件阶段约束，10:54:19按用户要求作为代表情景时刻；不可自动等同于泥石流物理触发时刻，后者仍未知。",
         "- 冲突：赛题原10:30保留，与本轮时间线不一致，尚未解释。不能把10:30自行改称报告时间。",
         "- 截图展示口岸附近明显的河道/地表外观变化，只作定性旁证；没有地理配准、比例与独立核验的获取时间，不据图计算面积、深度、流量或确认日期。",
         f"- 本轮最后使用标签为{anchor}（北京时间）。从冰崩起始所属整点再退1小时；仅是保守标签选择，不等于已验证观测支持区间、无信息泄漏或业务可得性。",
@@ -713,7 +713,7 @@ def main():
         raise ValueError("Question-one data checks failed: " + str(checks))
     make_report(top, scores, tails, flux, anchor, context, cfg, evidence)
     # A stable result index: updating this file does not require reading the chat.
-    progress = f"""# 项目完成情况\n\n更新：{datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(timespec="minutes")}；截止2026-10-30 20:00北京时间。\n\n| 内容 | 状态 | 查看位置 |\n| --- | --- | --- |\n| 环境、原8包审计、来源定义和复现 | 已完成本轮 | README.md；docs/data-audit.md |\n| 第一问 | 首版已计算并交付：区域背景案例对照，五因素、过程和敏感性 | [第一问报告](docs/question1-v1.md)；[五因素表](output/question1/top5_factors.csv) |\n| 第一问局地机制/普适关联验证 | 待局地资料与事件目录；不得视为已验证 | docs/question1-v1.md限制部分 |\n| 第二问触发评估 | 尚未完成 | docs/data-request-and-delivery.md |\n| 第三问时间/空间预报 | 尚未完成；触发仅为条件区间约束 | config/event-context.json |\n| 第四问过程仿真 | 尚未完成 | docs/data-request-and-delivery.md |\n| 支撑材料 | 第一问首版包已生成；四问最终包未生成 | output/deliverables/Question1_support_v1.zip |\n\n第一问运行：`conda activate mc-base` 后 `python scripts/complete_question1.py`。无需重跑其他审计。\n\n本轮{len(checks)}项数据一致性校验通过；校验只证明程序及计数一致，不证明灾害机制或预报能力。\n\n新事件时间为用户报告、未独立核验，与赛题10:30冲突保留。前后截图只作定性参考，原始小时数据未改动、未新增填补、未生成累计降水特征。\n"""
+    progress = f"""# 项目完成情况\n\n更新：{datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(timespec="minutes")}；截止2026-10-30 20:00北京时间。\n\n| 内容 | 状态 | 查看位置 |\n| --- | --- | --- |\n| 环境、原8包审计、来源定义和复现 | 已完成本轮 | README.md；docs/data-audit.md |\n| 第一问 | 首版已计算并交付：区域背景案例对照，五因素、过程和敏感性 | [第一问报告](docs/question1-v1.md)；[五因素表](output/question1/top5_factors.csv) |\n| 第一问局地机制/普适关联验证 | 待局地资料与事件目录；不得视为已验证 | docs/question1-v1.md限制部分 |\n| 第二问触发评估 | 空间条件筛查首版已完成；不报未经校准的概率 | docs/question2-v0.md |\n| 第三问时间/空间预报 | 转化时段10:54:19–10:55:10已纳入；精确触发与统计95%区间仍未知 | docs/question3-v0.md |\n| 第四问过程仿真 | 中心线一维恒速敏感性首版；非二维水动力模型 | docs/question4-v0.md |\n| 支撑材料 | 四问轻量结果已生成；不含原始比赛数据与大型栅格 | support_materials/README.md |\n\n第一问运行：`conda activate mc-base` 后 `python scripts/complete_question1.py`。无需重跑其他审计。\n\n本轮{len(checks)}项数据一致性校验通过；校验只证明程序及计数一致，不证明灾害机制或预报能力。\n\n新事件时间为用户报告、未独立核验，与赛题10:30冲突保留。前后截图只作定性参考，原始小时数据未改动、未新增填补、未生成累计降水特征。\n"""
     (ROOT / "PROGRESS.md").write_text(progress, encoding="utf-8")
     if not args.no_package:
         package_outputs()

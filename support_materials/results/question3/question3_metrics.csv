@@ -1,6 +1,10 @@
 metric,value,interpretation
 onset_to_arrival_elapsed_min,7.0,reported chronology; not debris-flow-only travel time
+transition_start_to_arrival_min,4.683333333333334,reported phase interval start to arrival; not a measured travel time
+transition_end_to_arrival_min,3.8333333333333335,reported phase interval end to arrival; not a measured travel time
+representative_transition_to_arrival_min,4.683333333333334,scenario elapsed time from representative transition point
 initialization_to_onset_h,26.866666666666667,hindcast initialization lag; not operational lead
+initialization_to_representative_transition_h,26.905277777777776,hindcast initialization lag; not operational lead
 initialization_to_arrival_h,26.983333333333334,hindcast initialization lag; not operational lead
 conditional_perfect_detection_lead_min,7.0,hypothetical immediate onset detection only
 reported_runout_distance_km,22.0,approximate user-reported distance

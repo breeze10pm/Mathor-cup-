@@ -41,6 +41,9 @@ def main() -> None:
     routes = event["route_candidates"]
     start_time = datetime.fromisoformat(cfg["start_time"])
     reported_arrival = datetime.fromisoformat(cfg["arrival_anchor_time"])
+    transition_start = datetime.fromisoformat(cfg["transition_start_time"])
+    transition_end = datetime.fromisoformat(cfg["transition_end_time"])
+    transition_reference = datetime.fromisoformat(cfg["transition_representative_time"])
     observed_elapsed_s = (reported_arrival - start_time).total_seconds()
     if observed_elapsed_s <= 0:
         raise ValueError("Reported chronology must be ordered")
@@ -50,6 +53,7 @@ def main() -> None:
     trajectory_rows: list[dict[str, object]] = []
     arrival_rows: list[dict[str, object]] = []
     profile_rows: list[dict[str, object]] = []
+    transition_position_rows: list[dict[str, object]] = []
     for route in routes:
         start_km = float(route["source_chainage_km"])
         end_km = float(route["port_chainage_km"])
@@ -79,6 +83,24 @@ def main() -> None:
         profile_rows.extend(local.to_dict(orient="records"))
 
         base_speed = distance_m / observed_elapsed_s
+        for phase, phase_time in (
+            ("transition_window_start", transition_start),
+            ("representative_transition_time", transition_reference),
+            ("transition_window_end", transition_end),
+        ):
+            phase_elapsed_s = (phase_time - start_time).total_seconds()
+            modeled_distance_m = float(np.clip(base_speed * phase_elapsed_s, 0, distance_m))
+            transition_position_rows.append(
+                {
+                    "route_id": route["route_id"],
+                    "phase_marker": phase,
+                    "phase_time_beijing": phase_time.isoformat(),
+                    "seconds_after_ice_collapse_onset": phase_elapsed_s,
+                    "modeled_distance_from_source_projection_km": modeled_distance_m / 1000,
+                    "modeled_remaining_to_port_km": (distance_m - modeled_distance_m) / 1000,
+                    "assumption": "constant average route speed from 10:52 source projection; indicative scenario position only, not observed transition location",
+                }
+            )
         for scenario, factor in factors.items():
             speed = base_speed * factor
             travel_s = distance_m / speed
@@ -124,9 +146,11 @@ def main() -> None:
     trajectories = pd.DataFrame(trajectory_rows)
     arrivals = pd.DataFrame(arrival_rows)
     profile = pd.DataFrame(profile_rows).drop_duplicates(["route_id", "chainage_m"])
+    transition_positions = pd.DataFrame(transition_position_rows)
     trajectories.to_csv(OUT / "question4_front_trajectories.csv", index=False)
     arrivals.to_csv(OUT / "question4_arrival_sensitivity.csv", index=False)
     profile.to_csv(OUT / "question4_route_profile.csv", index=False)
+    transition_positions.to_csv(OUT / "question4_transition_positions.csv", index=False)
 
     budget = pd.read_csv(BUDGET)
     local_budget = budget.loc[budget.reach.eq("A") & budget.km.between(19.5, 29.5)].copy()
@@ -142,6 +166,10 @@ def main() -> None:
         "model": "georeferenced centerline 1D event-anchored kinematic scenario",
         "status": "terrain-positioned and visually mapped; not a calibrated depth-averaged or rheological simulation",
         "reported_start_time": start_time.isoformat(),
+        "reported_debris_to_mudflow_transition_interval": [transition_start.isoformat(), transition_end.isoformat()],
+        "representative_transition_time": transition_reference.isoformat(),
+        "transition_positions": transition_positions.to_dict(orient="records"),
+        "transition_position_caveat": "The phase time is user-reported, but its geographic location is not. Listed positions are only constant-average-speed scenario projections from the source projection.",
         "reported_arrival_time": reported_arrival.isoformat(),
         "reported_elapsed_minutes": observed_elapsed_s / 60,
         "source_to_port_routes": routes,
@@ -156,7 +184,7 @@ def main() -> None:
         "v11_floor_budget_near_port_core": near_core.to_dict(orient="records"),
         "datum_and_coverage": "v1.1 dh is EGM2008 and measured-only; local 2019/2026 DEM products use ellipsoidal heights. Do not directly difference these grids.",
         "omitted_physics": cfg["omitted_or_unknown"],
-        "interpretation": "Distance/route/elevation now come from the public georeferenced centerline. Event-anchored speed still uses user-reported onset and arrival and is not an independently observed flow velocity.",
+        "interpretation": "Distance/route/elevation now come from the public georeferenced centerline. Event-anchored speed still uses user-reported ice-collapse onset and arrival and is not an independently observed flow velocity. The newly reported transition window is shown as a temporal phase marker; its location is not known.",
     }
     (OUT / "question4_summary.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -196,9 +224,12 @@ def main() -> None:
             linewidth=2 if scenario == "event_anchored_baseline" else 1.25,
             label=f"{route_id} / {scenario}",
         )
-    axes[1].axvline(7, color="#dc2626", linestyle=":", linewidth=1.2, label="Reported port arrival (10:59)")
+    transition_start_min = (transition_start - start_time).total_seconds() / 60
+    transition_end_min = (transition_end - start_time).total_seconds() / 60
+    axes[1].axvspan(transition_start_min, transition_end_min, color="#f59e0b", alpha=0.18, label="Reported debris-to-mudflow transition window")
+    axes[1].axvline((reported_arrival - start_time).total_seconds() / 60, color="#dc2626", linestyle=":", linewidth=1.2, label="Reported port arrival (10:59)")
     axes[1].set(xlabel="Minutes after reported ice-collapse onset (10:52 BJT)", ylabel="Distance from source projection (km)")
-    axes[1].set_title("Centerline-based arrival sensitivity")
+    axes[1].set_title("Centerline scenario with reported phase window")
     axes[1].grid(alpha=0.22)
     axes[1].legend(fontsize=6.5, ncol=2, loc="lower right")
     fig.savefig(OUT / "question4_georeferenced_scenarios.png", dpi=180)

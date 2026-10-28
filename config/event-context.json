@@ -4,9 +4,16 @@
   "timezone": "Asia/Shanghai",
   "utc_offset": "+08:00",
   "source_status": "user_reported_not_independently_verified",
-  "source_note": "用户本轮明确提供10:52冰崩起始、10:59到达口岸及UTC+8；未提供这些时刻的原始调查或观测记录。日期沿用赛题，仍需与原始时间来源核对。",
+  "source_note": "用户提供北京时间UTC+8灾害时间线：10:52冰崩起始、10:54:19–10:55:10碎屑流向泥石流转化关键时段、10:59到达口岸。原始调查/观测来源尚未入库，时间误差未量化。",
   "ice_collapse_onset": "2026-08-26T10:52:00+08:00",
   "arrival_at_port": "2026-08-26T10:59:00+08:00",
+  "debris_to_mudflow_transition": {
+    "start": "2026-08-26T10:54:19+08:00",
+    "end": "2026-08-26T10:55:10+08:00",
+    "representative_exact_time": "2026-08-26T10:54:19+08:00",
+    "meaning": "用户提供的碎屑流向泥石流转化关键时段；不能自动等同于冰崩起始或泥石流触发时刻",
+    "source_status": "user_reported_not_independently_verified"
+  },
   "process_description_user_reported": "尼泊尔境内蓝塘里壤峰北坡一条冰川在海拔约5200米处断裂发生冰岩崩，高位快速坠落至约4000米，冲刷山体形成泥石流，沿普热普藏布和东林藏布约22公里到达海拔约1800米的吉隆口岸。",
   "process_description_status": "user_reported_original_text_not_independently_verified",
   "source_coordinates": {
@@ -37,7 +44,7 @@
   "reported_transition_elevation_m": 4000,
   "reported_port_elevation_m": 1800,
   "reported_runout_distance_km": 22,
-  "reported_precision": "minute; second=00 is serialization only, not measured second precision",
+  "reported_precision": "Ice-collapse onset and port arrival reported to minute; transition time reported to second-level endpoints, but source timing accuracy is not independently verified or quantified.",
   "debris_flow_trigger_exact": null,
   "trigger_constraint": {
     "lower_inclusive": "2026-08-26T10:52:00+08:00",
@@ -45,6 +52,12 @@
     "conditional_assumption": "同一灾害链的泥石流触发不早于所报告的冰崩起始，且不晚于该灾害链到达口岸；非独立核验的触发区间。分钟报告本身的不确定性尚未量化。",
     "probability_distribution": null,
     "confidence_level": null
+  },
+  "debris_flow_transition_constraint": {
+    "lower_inclusive": "2026-08-26T10:54:19+08:00",
+    "upper_inclusive": "2026-08-26T10:55:10+08:00",
+    "representative_exact_time_for_scenario": "2026-08-26T10:54:19+08:00",
+    "interpretation": "Reported transition phase window; not a calibrated trigger-time prediction interval."
   },
   "problem_literal_time": "2026-08-26 10:30",
   "conflict_note": "赛题10:30与用户提供的10:52/10:59存在时间线不一致；保留原值，未将10:30解释为报告或触发时刻。",

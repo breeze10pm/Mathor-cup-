@@ -1,0 +1,7 @@
+route_id,phase_marker,phase_time_beijing,seconds_after_ice_collapse_onset,modeled_distance_from_source_projection_km,modeled_remaining_to_port_km,assumption
+source_A,transition_window_start,2026-08-26T10:54:19+08:00,139.0,7.332465784958837,14.823186227147001,"constant average route speed from 10:52 source projection; indicative scenario position only, not observed transition location"
+source_A,representative_transition_time,2026-08-26T10:54:19+08:00,139.0,7.332465784958837,14.823186227147001,"constant average route speed from 10:52 source projection; indicative scenario position only, not observed transition location"
+source_A,transition_window_end,2026-08-26T10:55:10+08:00,190.0,10.022794957857403,12.132857054248436,"constant average route speed from 10:52 source projection; indicative scenario position only, not observed transition location"
+source_B,transition_window_start,2026-08-26T10:54:19+08:00,139.0,7.278520546863598,14.714131465242241,"constant average route speed from 10:52 source projection; indicative scenario position only, not observed transition location"
+source_B,representative_transition_time,2026-08-26T10:54:19+08:00,139.0,7.278520546863598,14.714131465242241,"constant average route speed from 10:52 source projection; indicative scenario position only, not observed transition location"
+source_B,transition_window_end,2026-08-26T10:55:10+08:00,190.0,9.949056862619306,12.043595149486531,"constant average route speed from 10:52 source projection; indicative scenario position only, not observed transition location"

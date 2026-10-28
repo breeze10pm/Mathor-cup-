@@ -163,7 +163,7 @@ def main() -> None:
         "station": export_station_window(),
         "sentinel_arithmetic_check": export_sentinel_arithmetic_check(),
         "wrf_d01": export_wrf_core_series(),
-        "evidence_boundary": "The reported 10:52 ice-collapse onset and 10:59 arrival are user-reported event times. They are not reclassified here as observed model times or exact trigger time.",
+        "evidence_boundary": "User-reported timeline: ice-collapse onset 10:52, debris-to-mudflow transition interval 10:54:19–10:55:10, port arrival 10:59 BJT. The transition interval is not reclassified as an independently verified exact physical trigger time.",
     }
     (OUT / "wrf_station_event_summary.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"

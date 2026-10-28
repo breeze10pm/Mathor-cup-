@@ -1,5 +1,5 @@
 interval_type,lower,upper,assumption
-hard_conditional_bound,2026-08-26T10:52:00+08:00,2026-08-26T10:59:00+08:00,same-chain assumption only; not probabilistic
-illustrative_uniform_90pct,2026-08-26T10:52:21+08:00,2026-08-26T10:58:39+08:00,uniform prior scenario; not calibrated
-illustrative_uniform_95pct,2026-08-26T10:52:10.500000+08:00,2026-08-26T10:58:49.500000+08:00,uniform prior scenario; not a statistical confidence interval
-illustrative_uniform_99pct,2026-08-26T10:52:02.100000+08:00,2026-08-26T10:58:57.900000+08:00,uniform prior scenario; not calibrated
+reported_transition_interval,2026-08-26T10:54:19+08:00,2026-08-26T10:55:10+08:00,user-reported phase timing; not statistically calibrated
+representative_exact_time_scenario,2026-08-26T10:54:19+08:00,2026-08-26T10:54:19+08:00,user-selected representative point; not independently verified physical trigger
+port_arrival_after_transition_start,2026-08-26T10:54:19+08:00,2026-08-26T10:59:00+08:00,conditional elapsed window 4m41s; transition start is not assumed to be full-route motion start
+exact_trigger_time,unknown,unknown,no direct trigger-time observation supplied
