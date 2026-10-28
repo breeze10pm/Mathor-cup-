@@ -13,7 +13,7 @@
 - 沟道几何及A/B候选起始链程：`data/supplementary/geo-pera-v1.1/centerline_v2.csv`与`output/event_context/event_context_summary.json`；处理投影坐标为EPSG:32645。A、B起始链程分别约1.795、1.958 km，距中心线约1.00、1.38 km；模型从对应沟道链程开始，不包含约5200 m源区到沟道的崩滑过程。
 - 床面暂取项目HMA 8 m GeoTIFF `data/西藏日喀则市吉隆县泥石流灾害（20260826）DEM8m数据/DongLinZangBu_basin_HMA8mDEM_fillAW3D30.tif`，把中心线从EPSG:32645变换到栅格CRS后，每25 m最近邻取样，再线性插值到求解网格。两条路线分别887、880个样点，越界、NoData和0高程样点均为0；没有填补NoData或平滑高程。全栅格0值约0.941%、NoData约0.130%，路线样点则无此类问题。
 - 另一份`data/2019-10-13_DEM_SGM_2m_merged.tif`仅覆盖路线约61%，不能无缝代表全程床面；没有将其与其他年份/产品拼接。中心线纵剖面与栅格地形之间的高程基准/垂直精度还缺少完整元数据。
-- UNOSAT/UNESCO灾后解译范围仅做空间背景叠加，不参与参数选择；叠加比例不是独立验证。公开geo-pera v1.1派生数据许可为CC BY-NC 4.0，需注明来源并遵守非商业条款。
+- UNOSAT/UNESCO灾后解译范围仅做空间背景叠加，不参与参数选择；叠加比例不是独立验证。公开[geo-pera v1.1发布页](https://github.com/geo-pera/bhotekoshi-2026-reconstruction/releases)标注派生数据许可为CC BY-NC 4.0，需注明来源并遵守非商业条款。
 
 ## 模型方程与数值方法
 
