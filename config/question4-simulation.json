@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "model": {
+    "name": "1D depth-averaged shallow-water debris-flow scenario",
+    "status": "un calibrated exploratory dynamics; post-inlet channel propagation only",
+    "crs": "EPSG:32645",
+    "time_origin": "relative seconds after assumed channel-entry hydrograph begins; calendar entry time unknown",
+    "centerline_csv": "data/supplementary/geo-pera-v1.1/centerline_v2.csv",
+    "event_context_summary": "output/event_context/event_context_summary.json",
+    "event_context_gpkg": "output/event_context/event_context.gpkg",
+    "centerline_source": "geo-pera Bhote Koshi 2026 reconstruction v1.1; CC BY-NC 4.0; attribution required",
+    "centerline_crs_evidence": "Existing event-context preparation identifies the CSV coordinates as EPSG:32645",
+    "input_dem": "data/西藏日喀则市吉隆县泥石流灾害（20260826）DEM8m数据/DongLinZangBu_basin_HMA8mDEM_fillAW3D30.tif",
+    "input_dem_note": "The HMA 8 m DEM is sampled after transforming the EPSG:32645 centerline coordinates to its GeoTIFF CRS; zero, NoData and out-of-raster route samples are rejected rather than replaced.",
+    "route_elevation_source": "DongLinZangBu_basin_HMA8mDEM_fillAW3D30.tif nearest-cell samples every 25 m along the geo-pera centerline; the vertical datum and effective source resolution are not documented in this project copy",
+    "inlet_definition": "A/B source-point nearest centerline chainage is the model inlet. Hillslope descent from the 5200 m source region to this inlet is excluded.",
+    "unmodeled_processes": [
+      "ice-rock avalanche from source points to channel inlet",
+      "debris-flow phase transition and water/sediment mixing",
+      "erosion, entrainment, deposition, lateral spreading, tributary inflow",
+      "two-phase solid-fluid interaction"
+    ]
+  },
+  "numerics": {
+    "grid_spacing_m": 100.0,
+    "cfl_number": 0.35,
+    "output_interval_s": 5.0,
+    "flow_profile_export_interval_s": 30.0,
+    "profile_export_times_s": [0.0, 5.0, 10.0, 20.0, 30.0, 60.0, 120.0, 300.0, 600.0, 1200.0, 1800.0],
+    "simulation_horizon_s": 1800.0,
+    "dry_depth_threshold_m": 0.001,
+    "bed_filter": "none; nearest-cell HMA DEM samples at 25 m are retained without smoothing; local uphill segments and steep jumps are reported as an input limitation"
+  },
+  "physical_parameters": {
+    "gravity_m_s2": 9.80665,
+    "inlet_depth_m": {
+      "value": 3.0,
+      "unit": "m",
+      "evidence_grade": "exploratory assumption",
+      "source_or_basis": "No local flow-depth observation; selected as a computational scenario. A separate Alpine case study reported average depth about 2 m, which is context only and not a local transfer.",
+      "source_url": "https://esurf.copernicus.org/articles/13/665/2025/index.html"
+    },
+    "pulse_duration_s": {
+      "value": 120.0,
+      "unit": "s",
+      "evidence_grade": "exploratory assumption",
+      "source_or_basis": "No local inlet hydrograph or channel-entry duration is available; rectangular pulse is a transparent boundary scenario. Not tied to the reported 10:54:19–10:55:10 transition window."
+    },
+    "volume_m3": {
+      "reference": 600000.0,
+      "sensitivity_values": [300000.0, 1200000.0],
+      "unit": "m3",
+      "evidence_grade": "exploratory assumption; no local source or channelized volume measured",
+      "source_or_basis": "Reference volume and half/double perturbations are scenario inputs only. A published 60,000 m3 Alpine event is not a local prior and is not used as a measured value.",
+      "source_url": "https://esurf.copernicus.org/articles/13/665/2025/index.html"
+    },
+    "channel_width_m": {
+      "reference": 100.0,
+      "sensitivity_values": [50.0, 200.0],
+      "unit": "m",
+      "evidence_grade": "exploratory assumption; no surveyed cross-sections",
+      "source_or_basis": "Constant rectangular-equivalent width chosen only for sensitivity scenarios; not measured from imagery or a cross-section."
+    },
+    "voellmy_mu": {
+      "reference": 0.1,
+      "sensitivity_values": [0.05, 0.2],
+      "unit": "dimensionless",
+      "evidence_grade": "literature-grounded candidate scenarios; not calibrated locally",
+      "source_or_basis": "An ESurf 2025 case used mu=0.1 as an illustrative Voellmy scenario and derived mu=0.249 for a separately calibrated Alpine case. This project explores lower-to-higher values without transferring that case as local truth.",
+      "source_url": "https://esurf.copernicus.org/articles/13/665/2025/index.html"
+    },
+    "voellmy_xi_m_s2": {
+      "reference": 300.0,
+      "sensitivity_values": [50.0, 1000.0],
+      "unit": "m s-2",
+      "evidence_grade": "literature-grounded candidate scenarios; not calibrated locally",
+      "source_or_basis": "The same ESurf 2025 paper uses xi=1000 m s-2 in an illustrative case and estimates xi about 52 m s-2 for its instrumented Alpine event. 300 is an intermediate exploration value, not a reported measurement.",
+      "source_url": "https://esurf.copernicus.org/articles/13/665/2025/index.html"
+    }
+  },
+  "scenarios": [
+    {"id": "A_reference", "route_id": "source_A", "group": "reference", "mu": 0.1, "xi_m_s2": 300.0, "volume_m3": 600000.0, "width_m": 100.0},
+    {"id": "A_low_resistance", "route_id": "source_A", "group": "combined_resistance_low", "mu": 0.05, "xi_m_s2": 1000.0, "volume_m3": 600000.0, "width_m": 100.0},
+    {"id": "A_high_resistance", "route_id": "source_A", "group": "combined_resistance_high", "mu": 0.2, "xi_m_s2": 50.0, "volume_m3": 600000.0, "width_m": 100.0},
+    {"id": "B_reference", "route_id": "source_B", "group": "source_point_sensitivity", "mu": 0.1, "xi_m_s2": 300.0, "volume_m3": 600000.0, "width_m": 100.0},
+    {"id": "A_mu_low", "route_id": "source_A", "group": "one_at_a_time_mu", "mu": 0.05, "xi_m_s2": 300.0, "volume_m3": 600000.0, "width_m": 100.0},
+    {"id": "A_mu_high", "route_id": "source_A", "group": "one_at_a_time_mu", "mu": 0.2, "xi_m_s2": 300.0, "volume_m3": 600000.0, "width_m": 100.0},
+    {"id": "A_xi_low", "route_id": "source_A", "group": "one_at_a_time_xi", "mu": 0.1, "xi_m_s2": 50.0, "volume_m3": 600000.0, "width_m": 100.0},
+    {"id": "A_xi_high", "route_id": "source_A", "group": "one_at_a_time_xi", "mu": 0.1, "xi_m_s2": 1000.0, "volume_m3": 600000.0, "width_m": 100.0},
+    {"id": "A_volume_low", "route_id": "source_A", "group": "one_at_a_time_volume", "mu": 0.1, "xi_m_s2": 300.0, "volume_m3": 300000.0, "width_m": 100.0},
+    {"id": "A_volume_high", "route_id": "source_A", "group": "one_at_a_time_volume", "mu": 0.1, "xi_m_s2": 300.0, "volume_m3": 1200000.0, "width_m": 100.0},
+    {"id": "A_width_low", "route_id": "source_A", "group": "one_at_a_time_width", "mu": 0.1, "xi_m_s2": 300.0, "volume_m3": 600000.0, "width_m": 50.0},
+    {"id": "A_width_high", "route_id": "source_A", "group": "one_at_a_time_width", "mu": 0.1, "xi_m_s2": 300.0, "volume_m3": 600000.0, "width_m": 200.0}
+  ],
+  "external_timing_evidence": {
+    "reported_ice_rock_avalanche_onset_bjt": "2026-08-26T10:52:00+08:00",
+    "reported_transition_reference_window_bjt": ["2026-08-26T10:54:19+08:00", "2026-08-26T10:55:10+08:00"],
+    "reported_port_arrival_bjt": "2026-08-26T10:59:00+08:00",
+    "use": "comparison-only external timeline; not a boundary-condition time, calibration target, or independent validation label"
+  }
+}

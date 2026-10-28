@@ -9,7 +9,7 @@
 | 第一问局地机制/普适关联验证 | 待局地资料与事件目录；不得视为已验证 | docs/question1-v1.md限制部分 |
 | 第二问触发评估 | 已升级为空间条件筛查：A/B源点、UNOSAT脱离区、双范围、河道中心线；没有训练标签，不报触发概率 | [第二问记录](docs/question2-v0.md)；[空间资料核验](docs/new-evidence-review.md)；`output/event_context/` |
 | 第三问时间/空间预报 | 已纳入10:54:19–10:55:10转化阶段窗口，以10:54:19作为用户指定的代表情景；泥石流物理触发精确时刻和统计95%区间仍未知 | [第三问报告](docs/question3-v0.md)；`output/question3/`
-| 第四问过程仿真 | 一维中心线前锋已标出转化阶段时间窗；恒速推算的位置是模拟情景，不是转化点观测；非二维水动力，未估计流深/堆积厚度 | [第四问报告](docs/question4-v0.md)；`output/question4/`
+| 第四问过程仿真 | v1已实现并运行一维深度平均有限体积动力学情景：质量/动量方程、HLL水静力重构、CFL步长、Voellmy摩阻，含A/B及参数敏感性、动态图/QGIS层；守恒与非负性通过，但25–200m网格传播距离差异显著，尚未空间收敛，仅可作探索性条件情景，不能称为真实预报 | [第四问技术版](docs/question4-v1.md)；本地结果`output/question4/final/` |
 | 新增外部资料 | 已本地获取中心线、v1.1口岸段dh/1σ/实测DSM/预算；数据和第三方栅格按规则不进Git | [来源、许可和限制](docs/new-evidence-review.md)；`data/supplementary/geo-pera-v1.1/` |
 | 数据性质与关键缺口 | 已逐题区分实测、遥感派生、天气模式和本项目情景模拟，并列出完成各问的关键缺口 | [数据来源与关键缺口](docs/data-provenance-and-critical-gaps.md) |
 | 支撑材料 | 四问首版报告、程序和复现说明整理中；本次提交不含比赛原始数据、第三方原始/衍生大栅格 | `docs/`、`scripts/`、`config/`；QGIS本地层在`output/event_context/` |
