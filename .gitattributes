@@ -1,3 +1,4 @@
-# Preserve exact bytes of versioned numerical evidence and solver snapshots.
-support_materials/research/** -text
-scripts/question4*.py -text
+* text=auto eol=lf
+# Numerical evidence and solver snapshots retain original bytes and hashes.
+support_materials/research/** -text whitespace=cr-at-eol
+scripts/question4*.py -text whitespace=cr-at-eol

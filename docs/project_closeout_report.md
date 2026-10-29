@@ -11,3 +11,14 @@
 
 仅本地：原始遥感/DEM/WRF、完整GIS、状态NPZ缓存、内部资料包、许可未明的原始表格、真实共同床面。第三方来源与许可核查见data_catalog.md。代码许可证未由权利人指定，不擅自授权。
 遗留：Q3统计95%指标不可可靠估计；Q2水源阈值未本地校准；Q4速度、过程线及现场准确性未验证。main在PR合并前仍为旧入口。
+
+## 远程交付状态
+
+已推送分支：https://github.com/breeze10pm/Mathor-cup-/tree/codex/project-finalization
+批次提交：9fd88e1（D02）、14e1c48（Q4算法与验收）、138eb8c（研究文档与精选证据）；后续换行及交付记录修正在本分支最新提交。
+GitHub连接器创建PR实际返回HTTP 403：Resource not accessible by integration。本机未发现gh CLI。PR尚未创建，没有伪造PR编号，也未合并main。可由有权限账号从以下预填比较页创建：
+https://github.com/breeze10pm/Mathor-cup-/compare/main...codex/project-finalization?expand=1
+main仍为3afaa11。当前没有GitHub Actions工作流，因此没有远程CI通过声明；实际测试为本地和独立无数据副本。
+
+敏感信息常见凭据模式扫描未命中；没有超过5MiB的跟踪文件，没有新增执行权限或符号链接。此检查不能保证排除一切未知秘密。新增34个结果Git blob逐字节SHA与原输出相符；对这些数据及求解器快照禁用Git换行转换，其余文档采用LF，避免平台换行造成伪差异。
+原始DEM/影像/WRF/完整GIS和NPZ缓存仍在本地。内部deliverables以及6份未跟踪计划仅本地保留并已备份；未无差别上传。
