@@ -1,6 +1,6 @@
 # 图表索引
 
-全部新图及SHA见[论文图表清单](paper/figure_manifest.csv)。
+全部新图及SHA见[研究图表清单](figure_manifest.csv)。
 
 ### F1 WRF嵌套域模式水热背景；非实测，小时区间，不用于因果识别
 

@@ -30,7 +30,7 @@ python scripts/run_pipeline.py --dry-run
 
 - [研究范围](docs/overview.md) · [方法与版本](docs/methodology.md) · [数值验证](docs/validation.md) · [科学限制](docs/limitations.md)
 - [数据来源与许可](docs/data_catalog.md) · [追溯关系](docs/provenance.md) · [版本历史](docs/changelog.md) · [AI辅助](docs/ai_assistance.md)
-- [图表](docs/figures.md) · [论文增量](docs/paper/manuscript_update_notes.md) · [关键数字](docs/paper/numbers_master.csv)
+- [图表](docs/figures.md) · [研究结果索引](support_materials/research/results_manifest.csv)
 - [成果盘点](docs/project_inventory.md) · [整理验收报告](docs/project_closeout_report.md)
 
 scripts/config/tests保留现有路径；support_materials/research只含精选研究结果；data/output不整体分发；docs/archive与历史报告保留不利结果和研究过程。

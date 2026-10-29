@@ -94,30 +94,10 @@ def main():
         old=subprocess.run(['git','cat-file','-e','origin/codex/question4-dynamics:'+rel],cwd=ROOT,capture_output=True).returncode==0
         version.append(dict(path=rel,sha256=sha(p),remote_at_start=old,publish_path=rel,action='retain or add source',limitation='version-specific results'))
     table('docs/version_matrix.csv',version)
-    numbers=[]
-    for group,filename,idcols in [('d02','q1_weather_windows.csv',['domain','site','start_beijing','end_beijing','window_hours']),
-        ('q4_acceptance','refinement_comparison.csv',['pair']),('q4_acceptance','grid_summary.csv',['dx_m']),
-        ('q4_acceptance','section_1000_comparison.csv',['pair']),('q4_acceptance','section_timing_and_volume.csv',['dx_m'])]:
-        path=PUB/group/filename; f=pd.read_csv(path)
-        for i,row in f.iterrows():
-            for field in f.select_dtypes(include='number').columns:
-                numbers.append(dict(source_path=path.relative_to(ROOT).as_posix(),row_1based=i+1,
-                    identity='; '.join(f'{k}={row[k]}' for k in idcols if k in row),field=field,value=row[field],
-                    source_sha256=sha(path),interpretation='original CSV units; _relative fields are fractions, multiply by 100 for percent',
-                    review='machine extracted; independent scientific review outstanding'))
-    table('docs/paper/numbers_master.csv',numbers)
     figures=[dict(figure_id=f'F{i+1}',path=r['result_path'],source=r['source_path'],sha256=r['sha256'],
         caption=('WRF嵌套域模式水热背景；非实测，小时区间，不用于因果识别' if r['analysis']=='d02' else '一维数值实验与网格敏感性；非真实灾害验证；候选与基线分开'),
         algorithm=r['algorithm_version'],status='existing computed figure; no new experiment') for i,r in enumerate([x for x in manifest if x['result_path'].endswith('.png')])]
-    table('docs/paper/figure_manifest.csv',figures)
-    table('docs/paper/manuscript_change_table.csv',[
-        dict(section=q,previous=a,current=b,evidence=c,review='source checked; independent review pending',suggested_figure=fig)
-        for q,a,b,c,fig in [
-        ('Q1','D01背景、五因素比较','增加D02窗口对照，原排名不变','support_materials/research/d02/q1_weather_windows.csv','WRF天气对照'),
-        ('Q2','水源未知的条件评估','增加描述性水热；不重算临界阈值或概率','support_materials/research/d02/q2_hydrothermal_scenarios.csv','水热背景'),
-        ('Q3','95%不可可靠估计','空间尺度更新，统计指标仍不可估计','support_materials/research/d02/q3_reliability.csv','保留时间证据图'),
-        ('Q4','v1基线网格未收敛','并列候选算法与细网格证据；不是整体严格收敛','support_materials/research/q4_acceptance/refinement_comparison.csv','候选细网格比较'),
-        ('全篇','2026-10-29增量说明已提及D02和候选','无新增科学实验；新增来源、版本、数字及图件索引','docs/paper/numbers_master.csv','不重复包装为新发现')]])
+    table('docs/figure_manifest.csv',figures)
     refs=[
       ('TPDC','https://data.tpdc.ac.cn/','JS页面未取得具体再分发许可；原始及逐格数据不发布','官方气象/GIS数据；保留本地来源索引'),
       ('2019 DEM','https://zenodo.org/records/22911264','2026-10-29已核实CC BY-NC 4.0；原始Pléiades影像另需CNES许可','Etienne Berthier; v2；页面建议引用DOI与记录DOI不同，引用时标版本'),
@@ -125,7 +105,7 @@ def main():
       ('geo-pera','https://github.com/geo-pera/bhotekoshi-2026-reconstruction/releases','v1.1来源保留；代码MIT不自动授予原始影像/所有派生数据许可','代码LICENSE已读；各数据资产条款需单独核验'),
       ('UNOSAT','https://unosat.org/products/4259/','JS页面未读得完整许可；不新增发布矢量或遥感图像','卫星判读非现场独立验证'),
       ('Voellmy analytical benchmarks','https://doi.org/10.5194/esurf-13-665-2025','2026-10-29出版页面核实；CC BY 4.0','Bonomelli, Pilotti, Farina (2025), Earth Surface Dynamics 13,665–681；非本地参数校准')]
-    table('docs/paper/references_check.csv',[dict(source=a,url=b,verification=c,usage=d) for a,b,c,d in refs])
+    table('docs/data_sources.csv',[dict(source=a,url=b,verification=c,usage=d) for a,b,c,d in refs])
     write('docs/project_inventory.md','''# 研究成果盘点
 
 整理前已fetch：main=3afaa11，codex/question4-dynamics=e8806ef；两者相差Q4动力学、许可补充、Q2/Q3技术版本三次提交。整理分支从e8806ef创建。
@@ -134,15 +114,6 @@ def main():
 逐项路径和SHA见version_matrix.csv，公开结果见../support_materials/research/results_manifest.csv。全部data、output和内部deliverables仍在本地，未移动或覆盖。
 本地D02集成已实际完成；候选验收在convergence_supplement而不是candidate_submission。candidate_submission及question4-v2.md在整理前不存在。本次不创建虚假的正式v2，不提升候选为现场预测模型。
 本次只归档已计算成果，不重跑大型模拟；初诊CSV、算法比较CSV和细网格CSV的行数由实际文件计数见validation.md。
-''')
-    write('docs/paper/manuscript_update_notes.md','''# 论文增量与引用版本
-
-两层对照：相对早期Q1/Q2/Q3/Q4 v1资料，新增D02嵌套天气背景、候选边界/静摩擦算法和6.25m验收；相对2026-10-29的增量说明，无新增科学实验，只新增实际文件核验、版本统一与引用索引。当前论文正文未提供，不能声称已逐句修改或核对整篇论文。
-
-使用manuscript_change_table.csv定位章节；numbers_master.csv从原CSV逐字段提取，不手工补缺失；figure_manifest.csv标记图件。所有_relative字段是比例而不是百分数。正文取百分数需乘100。
-Q4正文展示候选多网格图，旧final GIF只能标作旧基线。候选12.5m前锋约1.806km，是假设入沟传播，不是22km全链重建。95%存储体积位置不是Q3统计95%置信区间。
-完整单网格候选动画未在既有成果中提供，本次不把旧动画重新标成候选。图表原始版本未作美化改值。
-外部时间资料的证据类型仍为研究过程中提供、待独立核验；不改称现场精确标签。独立科学审核仍需完成。
 ''')
     write('docs/overview.md','''# 研究范围
 
@@ -174,7 +145,7 @@ question4_boundary_candidate.py检验入口质量/动量一致性；question4_fr
 
 原始附件按config/input-manifest.json放入data/附件/；WRF D01放data/wrfout_d01_2026-08-25_00_00_00，D02由review_wrf_d02.py --d02 <合法取得的文件>传入。
 中心线及v1.1产品放data/supplementary/geo-pera-v1.1/；其余空间输入路径沿用config/question4-simulation.json和历史new-evidence-review.md。不得以地形版本不同的文件静默替代。
-来源和本次许可检查见paper/references_check.csv。灾前/灾后DEM为CC BY-NC 4.0，图像版权独立；本仓库不新增分发DEM、正射影像或矢量。geo-pera代码MIT不等同其全部数据MIT。
+来源和本次许可检查见data_sources.csv。灾前/灾后DEM为CC BY-NC 4.0，图像版权独立；本仓库不新增分发DEM、正射影像或矢量。geo-pera代码MIT不等同其全部数据MIT。
 TPDC与UNOSAT完整资产再分发许可本次未取得，不发布WRF原网格、站点原始逐时大表或完整卫星边界。新增公开内容限研究计算摘要、情景指标与原创分析图，不授予第三方数据新的许可。涉及DEM衍生的研究图表保留非商业及署名来源约束，商业复用应另核许可。
 本仓库代码许可证尚未经权利人选择；未自动加入MIT/Apache或虚构作者署名。公开可读不等于获得无限制再利用许可。
 ''')
@@ -217,7 +188,7 @@ D02：python scripts/review_wrf_d02.py --d02 <文件路径>，再python scripts/
 pre-finalization-README.md与pre-finalization-PROGRESS.md来自e8806ef，保留当时措辞和资料状态，不作为当前进度。
 docs/question*-v*.md及既有计划文件是历史技术/过程记录，包含未通过的实验和当时任务描述；正式研究入口为根README与docs中的新方法、验证及局限说明。未发布内部协作包和聊天记录。
 ''')
-    write('docs/figures.md','# 图表索引\n\n全部新图及SHA见[论文图表清单](paper/figure_manifest.csv)。\n\n'+'\n\n'.join(f"### {r['figure_id']} {r['caption']}\n\n![{r['figure_id']}](../{r['path']})\n\n算法：{r['algorithm']}；原件：`{r['source']}`。" for r in figures))
+    write('docs/figures.md','# 图表索引\n\n全部新图及SHA见[研究图表清单](figure_manifest.csv)。\n\n'+'\n\n'.join(f"### {r['figure_id']} {r['caption']}\n\n![{r['figure_id']}](../{r['path']})\n\n算法：{r['algorithm']}；原件：`{r['source']}`。" for r in figures))
     write('README.md','''# 吉隆泥石流灾害链研究
 
 本项目整理2026年吉隆冰岩崩—碎屑流—泥石流—山洪灾害链的多源数据分析、分层条件评估、时间情景和一维动力学实验。研究阶段已结束；本仓库用于长期追溯和复现，不是经过现场校准的业务预报系统。
@@ -250,7 +221,7 @@ python scripts/run_pipeline.py --dry-run
 
 - [研究范围](docs/overview.md) · [方法与版本](docs/methodology.md) · [数值验证](docs/validation.md) · [科学限制](docs/limitations.md)
 - [数据来源与许可](docs/data_catalog.md) · [追溯关系](docs/provenance.md) · [版本历史](docs/changelog.md) · [AI辅助](docs/ai_assistance.md)
-- [图表](docs/figures.md) · [论文增量](docs/paper/manuscript_update_notes.md) · [关键数字](docs/paper/numbers_master.csv)
+- [图表](docs/figures.md) · [研究结果索引](support_materials/research/results_manifest.csv)
 - [成果盘点](docs/project_inventory.md) · [整理验收报告](docs/project_closeout_report.md)
 
 scripts/config/tests保留现有路径；support_materials/research只含精选研究结果；data/output不整体分发；docs/archive与历史报告保留不利结果和研究过程。
