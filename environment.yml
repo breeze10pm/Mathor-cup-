@@ -10,6 +10,7 @@ dependencies:
   - scipy
   - scikit-learn
   - statsmodels
+  - pillow
   - matplotlib-base
   - seaborn
   - openpyxl

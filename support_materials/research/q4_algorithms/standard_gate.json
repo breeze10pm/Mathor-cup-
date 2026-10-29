@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "scope": "basic analytic/equilibrium/stability tests only; NOT a grid-convergence gate",
+  "solver_sha256": "6892758960fde347f59756d0bdd772df9d84294a175be4f0334528b5807d1716",
+  "tests": 14,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "long_standard_runs": 15,
+  "long_standard_stability_passed": true,
+  "started_utc": "2026-10-29T02:53:16.633810+00:00",
+  "ended_utc": "2026-10-29T02:53:17.168553+00:00",
+  "command": "python scripts/gate_question4_candidate.py",
+  "grid_convergence_passed": false
+}

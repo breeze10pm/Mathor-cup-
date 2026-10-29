@@ -39,3 +39,7 @@ output/
 *.safetensors
 *.qgz~
 *.qgs~
+
+# Private collaboration exports and local-only planning/log artifacts.
+deliverables/
+output_*.log

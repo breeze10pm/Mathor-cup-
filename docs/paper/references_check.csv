@@ -1,0 +1,8 @@
+﻿source,url,verification,usage
+TPDC,https://data.tpdc.ac.cn/,JS页面未取得具体再分发许可；原始及逐格数据不发布,官方气象/GIS数据；保留本地来源索引
+2019 DEM,https://zenodo.org/records/22911264,2026-10-29已核实CC BY-NC 4.0；原始Pléiades影像另需CNES许可,Etienne Berthier; v2；页面建议引用DOI与记录DOI不同，引用时标版本
+post-event DEM,https://zenodo.org/records/22842746,2026-10-29已核实CC BY-NC 4.0；原始影像©2026 Vantor,David Shean; Shashank Bhushan; v1.0
+geo-pera,https://github.com/geo-pera/bhotekoshi-2026-reconstruction/releases,v1.1来源保留；代码MIT不自动授予原始影像/所有派生数据许可,代码LICENSE已读；各数据资产条款需单独核验
+UNOSAT,https://unosat.org/products/4259/,JS页面未读得完整许可；不新增发布矢量或遥感图像,卫星判读非现场独立验证
+Voellmy analytical benchmarks,https://doi.org/10.5194/esurf-13-665-2025,2026-10-29出版页面核实；CC BY 4.0,"Bonomelli, Pilotti, Farina (2025), Earth Surface Dynamics 13,665–681；非本地参数校准"
+friction equilibrium,https://doi.org/10.1029/2004JB003161,2026-10-29作者PDF已核实；不分发全文,"Mangeney-Castelnau et al. (2005), JGR 110 B09103；候选为适配实现非原文完整复现"

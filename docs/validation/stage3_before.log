@@ -1,0 +1,39 @@
+test_above_repose_pile_starts (tests.test_question4_friction_candidate.FrictionTests.test_above_repose_pile_starts) ... ok
+test_frictionless_dry_dam_break_against_ritter (tests.test_question4_friction_candidate.FrictionTests.test_frictionless_dry_dam_break_against_ritter) ... ok
+test_static_nonflat_bed (tests.test_question4_friction_candidate.FrictionTests.test_static_nonflat_bed) ... FAIL
+test_static_triangular_pile_and_dry_margin (tests.test_question4_friction_candidate.FrictionTests.test_static_triangular_pile_and_dry_margin) ... FAIL
+test_uniform_flow_stops_without_reversing (tests.test_question4_friction_candidate.FrictionTests.test_uniform_flow_stops_without_reversing) ... ERROR
+test_zero_inflow_dry_domain (tests.test_question4_friction_candidate.FrictionTests.test_zero_inflow_dry_domain) ... ok
+
+======================================================================
+ERROR: test_uniform_flow_stops_without_reversing (tests.test_question4_friction_candidate.FrictionTests.test_uniform_flow_stops_without_reversing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<PROJECT>\tests\test_question4_friction_candidate.py", line 26, in test_uniform_flow_stops_without_reversing
+    r=self.run_model(x,h,end=3,velocity=np.ones_like(x))
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<PROJECT>\tests\test_question4_friction_candidate.py", line 9, in run_model
+    return s.run_simulation(**kw)
+           ^^^^^^^^^^^^^^^^^^^^^^
+TypeError: run_simulation() got an unexpected keyword argument 'initial_velocity_profile_m_s'
+
+======================================================================
+FAIL: test_static_nonflat_bed (tests.test_question4_friction_candidate.FrictionTests.test_static_nonflat_bed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<PROJECT>\tests\test_question4_friction_candidate.py", line 23, in test_static_nonflat_bed
+    self.assertLess(np.max(abs(r['depth_m'][-1]-h)),1e-9)
+AssertionError: np.float64(0.5206526136895815) not less than 1e-09
+
+======================================================================
+FAIL: test_static_triangular_pile_and_dry_margin (tests.test_question4_friction_candidate.FrictionTests.test_static_triangular_pile_and_dry_margin)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<PROJECT>\tests\test_question4_friction_candidate.py", line 13, in test_static_triangular_pile_and_dry_margin
+    self.assertLess(np.max(abs(r['depth_m'][-1]-h)),1e-9)
+AssertionError: np.float64(0.6345116663252668) not less than 1e-09
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.375s
+
+FAILED (failures=2, errors=1)

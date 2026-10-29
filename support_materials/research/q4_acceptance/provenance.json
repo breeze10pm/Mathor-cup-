@@ -1,0 +1,24 @@
+{
+  "started_utc": "2026-10-29T06:09:32.846112+00:00",
+  "ended_utc": "2026-10-29T06:09:37.857966+00:00",
+  "solver_sha256": "6892758960fde347f59756d0bdd772df9d84294a175be4f0334528b5807d1716",
+  "common_bed_sha256": "a6141cc2a255eb777a61ecb4a731dfa8377f447152d5952568c201eb28074b21",
+  "state_sources": {
+    "12.5": "output/question4/algorithm_validation/cache/candidate/2178c2f784232e7e6716ce1809b05787d30cd8a11a50a359b160889abc068f82",
+    "25.0": "output/question4/algorithm_validation/cache/candidate/4f3f1435e016b58efb1ebf08d5271fc0755e21a223e0d8dd749c0952d8b44300",
+    "6.25": "output/question4/convergence_supplement/cache/candidate/fcb800a0cf6ec9bdbdc82d5e31f7a950af4d6b7c6f77a3bea4b84d791796f191"
+  },
+  "only_new_grid_m": 6.25,
+  "parameters": {
+    "cfl": 0.35,
+    "end_time_s": 1800,
+    "inlet_depth_m": 3.0,
+    "mu": 0.1,
+    "output_interval_s": 5.0,
+    "pulse_duration_s": 120.0,
+    "volume_m3": 600000.0,
+    "width_m": 100.0,
+    "xi_m_s2": 300.0
+  },
+  "all_states_finite": true
+}

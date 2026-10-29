@@ -1,0 +1,6 @@
+﻿section,previous,current,evidence,review,suggested_figure
+Q1,D01背景、五因素比较,增加D02窗口对照，原排名不变,support_materials/research/d02/q1_weather_windows.csv,source checked; independent review pending,WRF天气对照
+Q2,水源未知的条件评估,增加描述性水热；不重算临界阈值或概率,support_materials/research/d02/q2_hydrothermal_scenarios.csv,source checked; independent review pending,水热背景
+Q3,95%不可可靠估计,空间尺度更新，统计指标仍不可估计,support_materials/research/d02/q3_reliability.csv,source checked; independent review pending,保留时间证据图
+Q4,v1基线网格未收敛,并列候选算法与细网格证据；不是整体严格收敛,support_materials/research/q4_acceptance/refinement_comparison.csv,source checked; independent review pending,候选细网格比较
+全篇,2026-10-29增量说明已提及D02和候选,无新增科学实验；新增来源、版本、数字及图件索引,docs/paper/numbers_master.csv,source checked; independent review pending,不重复包装为新发现

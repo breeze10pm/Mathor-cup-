@@ -1,0 +1,9 @@
+{
+  "tracked_or_staged_files": 182,
+  "secret_pattern_hits": [],
+  "files_over_5MiB": [],
+  "result_blob_hashes_verified": 34,
+  "current_docs_broken_links": [],
+  "excluded": "data/, output/, deliverables/",
+  "note": "pattern scan is not exhaustive; historical Git author metadata preserved; no executable permission or symlink introduced"
+}

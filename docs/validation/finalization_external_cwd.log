@@ -1,0 +1,7 @@
+tabular: python scripts/audit_tabular.py
+spatial: python scripts/audit_spatial.py
+report: python scripts/build_audit_report.py
+verify: python scripts/verify_data_audit.py
+exploration: python scripts/explore_observations.py
+relations: python scripts/analyze_variable_relations.py
+profiles: python scripts/analyze_vertical_profiles.py
