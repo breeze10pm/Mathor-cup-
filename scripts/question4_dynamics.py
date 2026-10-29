@@ -39,8 +39,11 @@ def sample_raster_nearest(
         raise ValueError("rotated raster grids are not supported by nearest-cell sampler")
     cols_float = (np.asarray(raster_x) - transform.c) / transform.a
     rows_float = (np.asarray(raster_y) - transform.f) / transform.e
-    cols = np.rint(cols_float).astype(int)
-    rows = np.rint(rows_float).astype(int)
+    # Affine inverse coordinates refer to pixel corners, not centers. For an
+    # unrotated grid, floor selects the nearest pixel center (ties at edges).
+    # rint shifts half of the samples and rejects valid last-pixel centers.
+    cols = np.floor(cols_float).astype(int)
+    rows = np.floor(rows_float).astype(int)
     inside = (rows >= 0) & (rows < array.shape[0]) & (cols >= 0) & (cols < array.shape[1])
     values = np.full(x_values.size, np.nan, dtype=float)
     values[inside] = array[rows[inside], cols[inside]].astype(float)
